@@ -1,0 +1,192 @@
+/**
+ * Design Tokens
+ *
+ * This file contains all design tokens as CSS variables.
+ * These tokens are shared across:
+ * - shadcn/ui components
+ * - Kibo UI components
+ * - AI SDK UI components
+ * - Vega-Lite visualizations
+ * - Mermaid diagrams
+ *
+ * Color values use HSL format for better manipulation:
+ * hsl(hue, saturation%, lightness%)
+ */
+
+@layer theme {
+  :root {
+    /* ============================================
+       Base Colors
+       ============================================ */
+
+    /* Primary background and foreground */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    /* Card components */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    /* Popover components */
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* ============================================
+       Semantic Colors
+       ============================================ */
+
+    /* Primary brand color - used for main CTAs and key UI elements */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+
+    /* Secondary color - used for less prominent actions */
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    /* Muted/subtle elements - backgrounds, disabled states */
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    /* Accent color - used for highlights and hover states */
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    /* ============================================
+       Status Colors
+       ============================================ */
+
+    /* Destructive/error states */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Success states */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    /* Warning states */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    /* Info states */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 98%;
+
+    /* ============================================
+       UI Elements
+       ============================================ */
+
+    /* Border colors */
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+
+    /* Ring/focus indicator */
+    --ring: 221 83% 53%;
+
+    /* ============================================
+       Brand Color Scale
+       Used for charts, diagrams, and data visualization
+       ============================================ */
+
+    /* Brand scale - 9 distinct colors for data viz */
+    --brand-50: 221 83% 95%;
+    --brand-100: 221 83% 90%;
+    --brand-200: 221 83% 80%;
+    --brand-300: 221 83% 70%;
+    --brand-400: 221 83% 60%;
+    --brand-500: 221 83% 53%;  /* Primary brand color */
+    --brand-600: 221 83% 45%;
+    --brand-700: 221 83% 35%;
+    --brand-800: 221 83% 25%;
+    --brand-900: 221 83% 15%;
+
+    /* Data visualization categorical palette */
+    --chart-1: 221 83% 53%;   /* Blue */
+    --chart-2: 142 76% 36%;   /* Green */
+    --chart-3: 38 92% 50%;    /* Orange */
+    --chart-4: 280 65% 60%;   /* Purple */
+    --chart-5: 340 82% 52%;   /* Red */
+    --chart-6: 173 80% 40%;   /* Teal */
+    --chart-7: 48 89% 50%;    /* Yellow */
+    --chart-8: 262 83% 58%;   /* Violet */
+    --chart-9: 0 72% 51%;     /* Crimson */
+
+    /* Sequential scale for heatmaps and gradients */
+    --seq-1: 221 83% 95%;
+    --seq-2: 221 83% 80%;
+    --seq-3: 221 83% 65%;
+    --seq-4: 221 83% 53%;
+    --seq-5: 221 83% 40%;
+    --seq-6: 221 83% 25%;
+
+    /* ============================================
+       Spacing & Sizing
+       ============================================ */
+
+    /* Border radius */
+    --radius: 0.5rem;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    /* ============================================
+       Typography
+       ============================================ */
+
+    /* Font families are set via Tailwind config and layout.tsx */
+    /* These can be referenced in custom components */
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+  }
+
+  /* ============================================
+     Dark Mode Theme
+     ============================================ */
+
+  [data-theme="dark"],
+  .dark {
+    /* Base Colors */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Semantic Colors */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Status Colors - slightly adjusted for dark mode */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 98%;
+
+    /* UI Elements */
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 221 83% 53%;
+
+    /* Brand colors remain the same */
+    /* Chart colors remain the same for consistency */
+  }
+}
