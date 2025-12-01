@@ -10,13 +10,13 @@ import {
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex min-h-screen items-center justify-center bg-background font-sans">
       <main className="flex min-h-screen w-full max-w-5xl flex-col items-center gap-12 py-16 px-8">
         <div className="flex flex-col items-center gap-6 text-center">
-          <h1 className="max-w-2xl text-5xl font-semibold leading-tight tracking-tight text-black dark:text-zinc-50">
+          <h1 className="max-w-2xl text-5xl font-semibold leading-tight tracking-tight text-foreground">
             shadcn/ui Design System
           </h1>
-          <p className="max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+          <p className="max-w-xl text-lg leading-8 text-muted-foreground">
             Primitive components built with Radix UI and styled with Tailwind
             CSS variables. All components automatically adapt to light and dark
             themes.
@@ -145,10 +145,10 @@ export default function Home() {
         {/* Quick Links */}
         <section className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <Button asChild variant="default" size="lg">
-            <a href="/demo/viz">View Visualizations</a>
+            <a href="/demo/ai">Try AI Chat</a>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <a href="/demo/ai">Try AI Chat</a>
+            <a href="/demo/kibo">View Data Components</a>
           </Button>
         </section>
       </main>
