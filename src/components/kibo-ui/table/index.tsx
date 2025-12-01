@@ -117,7 +117,9 @@ export const TableHeaderGroup = ({
   children,
 }: TableHeaderGroupProps) => (
   <TableRowRaw key={headerGroup.id}>
-    {headerGroup.headers.map((header) => children({ header }))}
+    {headerGroup.headers.map((header) => (
+      <div key={header.id}>{children({ header })}</div>
+    ))}
   </TableRowRaw>
 );
 
@@ -131,7 +133,9 @@ export const TableHeader = ({ className, children }: TableHeaderProps) => {
 
   return (
     <TableHeaderRaw className={className}>
-      {table?.getHeaderGroups().map((headerGroup) => children({ headerGroup }))}
+      {table?.getHeaderGroups().map((headerGroup) => (
+        <div key={headerGroup.id}>{children({ headerGroup })}</div>
+      ))}
     </TableHeaderRaw>
   );
 };
@@ -217,7 +221,9 @@ export const TableRow = ({ row, children, className }: TableRowProps) => (
     data-state={row.getIsSelected() && "selected"}
     key={row.id}
   >
-    {row.getVisibleCells().map((cell) => children({ cell }))}
+    {row.getVisibleCells().map((cell) => (
+      <div key={cell.id}>{children({ cell })}</div>
+    ))}
   </TableRowRaw>
 );
 
@@ -233,7 +239,7 @@ export const TableBody = ({ children, className }: TableBodyProps) => {
   return (
     <TableBodyRaw className={className}>
       {rows?.length ? (
-        rows.map((row) => children({ row }))
+        rows.map((row) => <div key={row.id}>{children({ row })}</div>)
       ) : (
         <TableRowRaw>
           <TableCellRaw className="h-24 text-center" colSpan={columns.length}>
