@@ -17,7 +17,7 @@ import {
 import { atom, useAtom } from "jotai";
 import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon } from "lucide-react";
 import type { HTMLAttributes, ReactNode } from "react";
-import { createContext, memo, useCallback, useContext } from "react";
+import { createContext, Fragment, memo, useCallback, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -118,7 +118,7 @@ export const TableHeaderGroup = ({
 }: TableHeaderGroupProps) => (
   <TableRowRaw key={headerGroup.id}>
     {headerGroup.headers.map((header) => (
-      <div key={header.id}>{children({ header })}</div>
+      <Fragment key={header.id}>{children({ header })}</Fragment>
     ))}
   </TableRowRaw>
 );
@@ -134,7 +134,7 @@ export const TableHeader = ({ className, children }: TableHeaderProps) => {
   return (
     <TableHeaderRaw className={className}>
       {table?.getHeaderGroups().map((headerGroup) => (
-        <div key={headerGroup.id}>{children({ headerGroup })}</div>
+        <Fragment key={headerGroup.id}>{children({ headerGroup })}</Fragment>
       ))}
     </TableHeaderRaw>
   );
@@ -222,7 +222,7 @@ export const TableRow = ({ row, children, className }: TableRowProps) => (
     key={row.id}
   >
     {row.getVisibleCells().map((cell) => (
-      <div key={cell.id}>{children({ cell })}</div>
+      <Fragment key={cell.id}>{children({ cell })}</Fragment>
     ))}
   </TableRowRaw>
 );
@@ -239,7 +239,7 @@ export const TableBody = ({ children, className }: TableBodyProps) => {
   return (
     <TableBodyRaw className={className}>
       {rows?.length ? (
-        rows.map((row) => <div key={row.id}>{children({ row })}</div>)
+        rows.map((row) => <Fragment key={row.id}>{children({ row })}</Fragment>)
       ) : (
         <TableRowRaw>
           <TableCellRaw className="h-24 text-center" colSpan={columns.length}>
