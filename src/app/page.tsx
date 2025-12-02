@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChat } from "ai/react";
 import {
   Message,
@@ -21,6 +21,9 @@ import {
 import { Loader } from "@/components/ai-elements/loader";
 import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
 import { AppChatInput } from "@/components/app/AppChatInput";
+import { AppChainOfThought } from "@/components/app/AppChainOfThought";
+import type { ThoughtStep } from "@/components/app/AppChainOfThought";
+import { generateMockThoughtSteps } from "@/lib/mockThoughtSteps";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -52,6 +55,11 @@ export default function AgenticResearchPage() {
 
   // UI state
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+
+  // Chain-of-thought state: Map of message ID to thought steps
+  const [messageThoughts, setMessageThoughts] = useState<
+    Map<string, ThoughtStep[]>
+  >(new Map());
 
   // Mock chat history
   const [chatHistory] = useState<ChatHistoryItem[]>([
@@ -121,6 +129,81 @@ export default function AgenticResearchPage() {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [deepResearchEnabled, setDeepResearchEnabled] = useState(false);
   const [selectedDataSources, setSelectedDataSources] = useState<string[]>([]);
+
+  // Generate and animate mock thought steps when AI is processing
+  useEffect(() => {
+    if (isLoading && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+
+      // Only generate thoughts for user messages (the question)
+      if (lastMessage.role === "user") {
+        const steps = generateMockThoughtSteps(lastMessage.content);
+
+        // Use a temporary ID for the assistant message (will be updated when it arrives)
+        const tempAssistantId = `assistant-${lastMessage.id}`;
+
+        setMessageThoughts((prev) => new Map(prev).set(tempAssistantId, steps));
+
+        // Simulate progressive step completion
+        let currentStepIndex = 0;
+        const interval = setInterval(() => {
+          setMessageThoughts((prev) => {
+            const updated = new Map(prev);
+            const steps = updated.get(tempAssistantId);
+            if (!steps) return prev;
+
+            const updatedSteps = steps.map((step, idx) => {
+              if (idx < currentStepIndex) {
+                return { ...step, status: "complete" as const };
+              }
+              if (idx === currentStepIndex) {
+                return { ...step, status: "active" as const };
+              }
+              return step;
+            });
+
+            updated.set(tempAssistantId, updatedSteps);
+            return updated;
+          });
+
+          currentStepIndex++;
+          if (currentStepIndex >= steps.length) {
+            clearInterval(interval);
+          }
+        }, 2000); // Update every 2 seconds
+
+        return () => clearInterval(interval);
+      }
+    }
+  }, [isLoading, messages]);
+
+  // Update thought map key when actual assistant message arrives
+  useEffect(() => {
+    const lastAssistantMessage = messages
+      .filter((m) => m.role === "assistant")
+      .pop();
+    if (lastAssistantMessage && !isLoading) {
+      const lastUserMessage = messages.filter((m) => m.role === "user").pop();
+      const tempId = `assistant-${lastUserMessage?.id}`;
+
+      setMessageThoughts((prev) => {
+        if (prev.has(tempId)) {
+          const updated = new Map(prev);
+          const steps = updated.get(tempId);
+          updated.delete(tempId);
+          if (steps) {
+            // Mark all steps complete when response finishes
+            updated.set(
+              lastAssistantMessage.id,
+              steps.map((s) => ({ ...s, status: "complete" as const }))
+            );
+          }
+          return updated;
+        }
+        return prev;
+      });
+    }
+  }, [messages, isLoading]);
 
   // Handle suggestion clicks
   const handleSuggestionClick = (suggestion: string) => {
@@ -241,35 +324,70 @@ export default function AgenticResearchPage() {
                       const isLastMessage = index === messages.length - 1;
                       const isStreaming = isLoading && isLastMessage;
 
-                      return (
-                        <Message key={message.id} from={message.role}>
-                          <MessageContent>
-                            <MessageResponse parseIncompleteMarkdown={isStreaming}>
-                              {message.content}
-                            </MessageResponse>
-                          </MessageContent>
+                      // Get thought steps for this message
+                      // For user messages, look ahead to see if next (assistant) message has thoughts
+                      const nextMessage = messages[index + 1];
+                      const thoughtSteps =
+                        message.role === "user"
+                          ? messageThoughts.get(nextMessage?.id) ||
+                            messageThoughts.get(`assistant-${message.id}`)
+                          : messageThoughts.get(message.id);
 
-                          {message.role === "assistant" && !isStreaming && (
-                            <MessageActions>
-                              <MessageAction
-                                tooltip="Copy"
-                                label="Copy message"
-                                onClick={() =>
-                                  navigator.clipboard.writeText(message.content)
-                                }
+                      return (
+                        <div key={message.id}>
+                          <Message from={message.role}>
+                            <MessageContent>
+                              <MessageResponse
+                                parseIncompleteMarkdown={isStreaming}
                               >
-                                <Copy className="size-4" strokeWidth={1.5} />
-                              </MessageAction>
-                              <MessageAction
-                                tooltip="Regenerate"
-                                label="Regenerate response"
-                                onClick={() => reload()}
-                              >
-                                <RefreshCw className="size-4" strokeWidth={1.5} />
-                              </MessageAction>
-                            </MessageActions>
-                          )}
-                        </Message>
+                                {message.content}
+                              </MessageResponse>
+                            </MessageContent>
+
+                            {message.role === "assistant" && !isStreaming && (
+                              <MessageActions>
+                                <MessageAction
+                                  tooltip="Copy"
+                                  label="Copy message"
+                                  onClick={() =>
+                                    navigator.clipboard.writeText(
+                                      message.content
+                                    )
+                                  }
+                                >
+                                  <Copy className="size-4" strokeWidth={1.5} />
+                                </MessageAction>
+                                <MessageAction
+                                  tooltip="Regenerate"
+                                  label="Regenerate response"
+                                  onClick={() => reload()}
+                                >
+                                  <RefreshCw
+                                    className="size-4"
+                                    strokeWidth={1.5}
+                                  />
+                                </MessageAction>
+                              </MessageActions>
+                            )}
+                          </Message>
+
+                          {/* Chain-of-Thought - Show after user message, before assistant response */}
+                          {message.role === "user" &&
+                            thoughtSteps &&
+                            thoughtSteps.length > 0 && (
+                              <div className="mt-4">
+                                <AppChainOfThought
+                                  steps={thoughtSteps}
+                                  defaultCollapsed={
+                                    !isLoading || !isLastMessage
+                                  }
+                                  onStepClick={(step) =>
+                                    console.log("Step clicked:", step)
+                                  }
+                                />
+                              </div>
+                            )}
+                        </div>
                       );
                     })}
 
