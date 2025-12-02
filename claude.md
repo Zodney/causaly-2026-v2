@@ -1,6 +1,6 @@
 # Claude.md - AI Agent Quick Reference
 
-Causaly 2026 is a theme-aware Next.js 16 application with shadcn/ui primitives, integrated data components, AI capabilities, and rich visualizations. This guide provides quick reference for AI coding agents.
+Causaly 2026 is a theme-aware Next.js 16 application with shadcn/ui primitives, integrated data components, and AI capabilities. This guide provides quick reference for AI coding agents.
 
 ---
 
@@ -25,7 +25,6 @@ All detailed documentation lives in `.agent/` folder:
 - **shadcn/ui** - Primitive components (import directly)
 - **Kibo UI** - Data components (wrapped in `app/`)
 - **AI SDK** + OpenAI - Chat & streaming
-- **Vega-Lite** + **Mermaid** - Visualizations (wrapped in `viz/`)
 - **Jotai** - State management
 
 ---
@@ -38,7 +37,6 @@ src/
 ├── components/
 │   ├── ui/       # ✓ shadcn/ui - import directly
 │   ├── app/      # ✓ App wrappers - import in routes
-│   ├── viz/      # ✓ Visualizations - import in routes
 │   ├── kibo/     # ✗ Raw Kibo - do NOT import in routes
 │   └── ai/       # ✗ Raw AI - do NOT import in routes
 ├── lib/          # Utilities
@@ -52,12 +50,10 @@ src/
 **Routes MUST import from:**
 - ✓ `@/components/ui/*` (shadcn/ui primitives)
 - ✓ `@/components/app/*` (Kibo & AI wrappers)
-- ✓ `@/components/viz/*` (chart & diagram wrappers)
 
 **Routes MUST NOT import from:**
 - ✗ `@/components/kibo/*` (use `app/` wrappers instead)
 - ✗ `@/components/ai/*` (use `app/` wrappers instead)
-- ✗ Raw libraries (`vega-embed`, `mermaid`, etc.)
 
 **Why:** Maintains consistent theming and single source of integration logic.
 
@@ -75,8 +71,6 @@ src/
 --background, --foreground
 --primary, --secondary, --muted, --accent
 --card, --border, --ring
---chart-1 through --chart-9  /* 9-color palette */
---seq-1 through --seq-6      /* sequential scale */
 ```
 
 ---
@@ -89,7 +83,6 @@ src/
 // src/app/my-page/page.tsx
 import { Button } from "@/components/ui/button";
 import { AppDataTable } from "@/components/app/AppDataTable";
-import { BarChart } from "@/components/viz/BarChart";
 
 export default function MyPage() {
   return (
@@ -111,10 +104,6 @@ npx shadcn@latest add [component-name]
 
 See [Coding Patterns](.agent/sop/coding_patterns.md#creating-app-wrappers)
 
-### Creating Custom Chart
-
-See [Coding Patterns](.agent/sop/coding_patterns.md#creating-custom-visualizations)
-
 ---
 
 ## 🔍 Need More Details?
@@ -125,4 +114,4 @@ See [Coding Patterns](.agent/sop/coding_patterns.md#creating-custom-visualizatio
 
 ---
 
-**Last Updated:** 2025-11-28
+**Last Updated:** 2025-12-01

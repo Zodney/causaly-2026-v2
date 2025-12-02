@@ -93,7 +93,7 @@ export function ReasoningPanel({
               {/* Step content */}
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-semibold capitalize">
+                  <span className="text-sm font-medium capitalize">
                     {step.type.replace("_", " ")}
                   </span>
                   <Badge variant="outline" className="text-xs">
@@ -133,7 +133,7 @@ export function ReasoningPanel({
                   <>
                     <Separator className="my-2" />
                     <div className="space-y-1">
-                      <p className="text-xs font-semibold">Result:</p>
+                      <p className="text-xs font-medium">Result:</p>
                       <pre className="overflow-x-auto rounded-md bg-muted/50 p-3 text-xs font-mono text-muted-foreground">
                         {JSON.stringify(step.toolResult, null, 2)}
                       </pre>

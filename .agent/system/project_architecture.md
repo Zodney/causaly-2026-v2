@@ -44,12 +44,6 @@ Causaly 2026 is a modern, theme-aware web application built with Next.js 16, fea
    - Custom chat interfaces
    - Reasoning panels
 
-3. **Visualization Layer**
-   - **Vega-Lite** for charts (bar, line, scatter, heatmap)
-   - **Mermaid** for diagrams (flowcharts, sequences, gantt)
-   - Theme-aware color palettes
-   - Automatic dark mode support
-
 ### State Management
 - **Jotai** - Atomic state management
 - React hooks for local state
@@ -62,7 +56,7 @@ Causaly 2026 is a modern, theme-aware web application built with Next.js 16, fea
 - **TypeScript 5**
 - **ESLint** with Next.js config
 - **PostCSS** for CSS processing
-- **Geist** fonts (sans & mono)
+- **Roboto** fonts (sans & mono) - from tweakcn.com theme
 
 ---
 
@@ -82,11 +76,10 @@ causaly-2026/
 ├── src/
 │   ├── app/                         # Next.js App Router
 │   │   ├── page.tsx                 # Homepage
-│   │   ├── layout.tsx               # Root layout with fonts
+│   │   ├── layout.tsx               # Root layout with Roboto fonts
 │   │   ├── demo/                    # Demo pages
 │   │   │   ├── kibo/                # Kibo components demo
-│   │   │   ├── ai/                  # AI chat demo
-│   │   │   └── viz/                 # Visualization demo
+│   │   │   └── ai/                  # AI chat demo
 │   │   └── api/                     # API routes
 │   │       └── chat/                # Chat API endpoint
 │   │           └── route.ts         # OpenAI streaming handler
@@ -113,12 +106,6 @@ causaly-2026/
 │   │   │   ├── ChatThread.tsx       # Message list
 │   │   │   └── ReasoningPanel.tsx   # Reasoning display
 │   │   │
-│   │   ├── viz/                     # Visualization wrappers (✓ IMPORT)
-│   │   │   ├── VegaChart.tsx        # Generic Vega-Lite wrapper
-│   │   │   ├── BarChart.tsx         # Convenience bar chart
-│   │   │   ├── MermaidDiagram.tsx   # Generic Mermaid wrapper
-│   │   │   └── FlowDiagram.tsx      # Convenience flow diagram
-│   │   │
 │   │   └── app/                     # App-level wrappers (✓ IMPORT)
 │   │       ├── AppDataTable.tsx     # Wraps Kibo DataTable
 │   │       ├── AppFileDropzone.tsx  # Wraps Kibo FileDropzone
@@ -126,8 +113,7 @@ causaly-2026/
 │   │       └── AppReasoningPanel.tsx # Wraps AI ReasoningPanel
 │   │
 │   ├── lib/                         # Utility functions
-│   │   ├── utils.ts                 # General utilities (cn, etc.)
-│   │   └── color-utils.ts           # Color conversion for viz
+│   │   └── utils.ts                 # General utilities (cn, etc.)
 │   │
 │   ├── hooks/                       # Custom React hooks
 │   │   └── (empty - ready for custom hooks)
@@ -171,8 +157,7 @@ The project uses a strict 3-layer architecture to maintain separation of concern
 ┌─────────────────────────────────────────────────┐
 │  Layer 3: App Routes (src/app/*/page.tsx)       │
 │  ✓ Import from: @/components/app, @/components/ui│
-│  ✓ Import from: @/components/viz                │
-│  ✗ NEVER import: raw Kibo, AI, or viz libraries │
+│  ✗ NEVER import: raw Kibo or AI libraries       │
 └─────────────────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────┐
@@ -188,7 +173,6 @@ The project uses a strict 3-layer architecture to maintain separation of concern
 │  • Kibo UI (src/components/kibo-ui/)            │
 │  • AI Components (src/components/ai/)           │
 │  • shadcn/ui (src/components/ui/)               │
-│  • Vega-Lite, Mermaid (wrapped in viz/)         │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -208,11 +192,9 @@ All visual elements use CSS variables defined in `src/styles/tokens.css`:
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
   --primary: 221 83% 53%;
-  --chart-1: 221 83% 53%;  /* Blue */
-  --chart-2: 142 76% 36%;  /* Green */
-  /* ... 9 total chart colors */
-  --seq-1: 221 83% 95%;    /* Sequential scale */
-  /* ... 6 total sequential colors */
+  --secondary: 240 4.8% 95.9%;
+  --accent: 240 4.8% 95.9%;
+  /* ... all theme colors */
 }
 
 /* Dark mode */
@@ -226,35 +208,9 @@ All visual elements use CSS variables defined in `src/styles/tokens.css`:
 **Benefits:**
 - Single source of truth for colors
 - Automatic dark mode for all components
-- Theme-aware visualizations
 - Easy brand customization
 
-### 3. Visualization Integration
-
-Visualization components (`VegaChart`, `MermaidDiagram`) automatically apply theme:
-
-```typescript
-// VegaChart reads CSS variables at runtime
-const chartPalette = getChartPalette();      // --chart-1 through --chart-9
-const sequentialScale = getSequentialScale(); // --seq-1 through --seq-6
-const primary = getCSSVariable('--primary');
-const foreground = getCSSVariable('--foreground');
-
-// Applies to Vega spec config
-{
-  config: {
-    mark: { color: primary },
-    range: {
-      category: chartPalette,    // Multi-series charts
-      ramp: sequentialScale,     // Heatmaps/gradients
-    }
-  }
-}
-```
-
-**Result:** Charts and diagrams perfectly match the app theme without manual configuration.
-
-### 4. TypeScript-First
+### 3. TypeScript-First
 
 All components, utilities, and API routes use TypeScript:
 - Props interfaces for all components
@@ -289,21 +245,6 @@ All components, utilities, and API routes use TypeScript:
   - Error handling
   - Loading states
 
-### 4. Visualizations
-- **Charts (Vega-Lite):**
-  - `VegaChart` - Generic wrapper with theme
-  - `BarChart` - Convenience bar chart component
-  - Supports: bar, line, scatter, heatmap, etc.
-
-- **Diagrams (Mermaid):**
-  - `MermaidDiagram` - Generic wrapper with theme
-  - `FlowDiagram` - Convenience flowchart component
-  - Supports: flowcharts, sequences, gantt, etc.
-
-**Color Palettes:**
-- **Categorical:** `--chart-1` through `--chart-9` (9 colors for multi-series)
-- **Sequential:** `--seq-1` through `--seq-6` (6 colors for heatmaps/gradients)
-
 ---
 
 ## Integration Points
@@ -325,8 +266,6 @@ OPENAI_API_KEY=sk-...
 - **Radix UI:** Accessible primitive components
 - **TanStack Table:** Advanced table functionality
 - **OpenAI Edge:** Edge-compatible OpenAI client
-- **Vega/Vega-Lite:** Declarative visualizations
-- **Mermaid:** Diagram generation
 
 ---
 
@@ -337,7 +276,6 @@ OPENAI_API_KEY=sk-...
 ```typescript
 // src/app/my-page/page.tsx
 import { AppDataTable } from "@/components/app/AppDataTable";
-import { BarChart } from "@/components/viz/BarChart";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -346,7 +284,7 @@ export default function MyPage() {
     <div className="min-h-screen bg-background p-8">
       <Card className="p-6">
         <h1 className="text-2xl font-bold text-foreground">My Page</h1>
-        <BarChart data={myData} xField="x" yField="y" />
+        <AppDataTable data={myData} />
       </Card>
     </div>
   );
@@ -376,36 +314,6 @@ export function AppMyComponent({ data, onAction }: AppMyComponentProps) {
       />
     </div>
   );
-}
-```
-
-### Pattern 3: Creating a Custom Chart
-
-```typescript
-// src/components/viz/LineChart.tsx
-"use client";
-
-import { VegaChart } from "./VegaChart";
-
-export interface LineChartProps {
-  data: Array<{ x: number; y: number }>;
-  xField: string;
-  yField: string;
-  title?: string;
-}
-
-export function LineChart({ data, xField, yField, title }: LineChartProps) {
-  const spec = {
-    mark: "line",
-    data: { values: data },
-    encoding: {
-      x: { field: xField, type: "quantitative" },
-      y: { field: yField, type: "quantitative" },
-    },
-    title,
-  };
-
-  return <VegaChart spec={spec} />;
 }
 ```
 
@@ -440,8 +348,6 @@ Tailwind classes re-evaluate
   ↓
 Components update (bg-background, text-foreground, etc.)
   ↓
-Visualizations re-render with new colors
-  ↓
 Instant theme switch
 ```
 
@@ -469,16 +375,10 @@ User sees streaming response
 ### 1. Component Optimization
 - Client components use `"use client"` directive
 - Server components by default (no directive)
-- Dynamic imports for heavy libraries (vega-embed, mermaid)
+- Dynamic imports for heavy libraries when needed
 - `useEffect` hooks prevent SSR issues
 
-### 2. Visualization Performance
-- Vega charts render on client only (avoid hydration mismatch)
-- Mermaid diagrams use dynamic imports
-- Container width detection for responsive charts
-- Skeleton loaders during chart initialization
-
-### 3. Build Optimization
+### 2. Build Optimization
 - Turbopack for fast development
 - Tree-shaking for unused code
 - CSS purging via Tailwind
@@ -518,20 +418,14 @@ Follow the wrapper pattern:
 3. Create wrappers in `src/components/app/`
 4. Import wrappers in routes
 
-### 2. Adding New Visualizations
-1. Create wrapper in `src/components/viz/`
-2. Use `getCSSVariable()` for theme colors
-3. Apply `getChartPalette()` or `getSequentialScale()`
-4. Export from viz folder
-
-### 3. Database Integration
+### 2. Database Integration
 Future considerations:
 - ORM: Prisma, Drizzle, or TypeORM
 - Database: PostgreSQL, MySQL, or MongoDB
 - Migration pattern: `src/db/migrations/`
 - Schema: `src/db/schema/`
 
-### 4. Authentication
+### 3. Authentication
 Future considerations:
 - Auth provider: NextAuth.js, Clerk, or Supabase Auth
 - Middleware: `middleware.ts` for route protection
@@ -549,6 +443,6 @@ Future considerations:
 
 ---
 
-**Last Updated:** 2025-11-28
-**Version:** 1.0.0
-**Status:** Initial architecture complete, ready for feature development
+**Last Updated:** 2025-12-01
+**Version:** 1.0.1
+**Status:** Typography updated to Roboto fonts (tweakcn.com theme)

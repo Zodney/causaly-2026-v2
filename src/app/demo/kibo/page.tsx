@@ -80,7 +80,7 @@ const userColumns: ColumnDef<User>[] = [
       const status = row.getValue("status") as string;
       return (
         <span
-          className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
             status === "active"
               ? "bg-success/10 text-success-foreground border border-success/20"
               : "bg-muted text-muted-foreground border border-border"
@@ -167,7 +167,7 @@ export default function KiboDemoPage() {
             <CardContent className="space-y-6">
               {/* Image Upload */}
               <div>
-                <h3 className="mb-3 text-lg font-semibold">Image Upload</h3>
+                <h3 className="mb-3 text-lg font-medium">Image Upload</h3>
                 <AppFileDropzone
                   label="Upload profile picture"
                   accept={{
@@ -182,7 +182,7 @@ export default function KiboDemoPage() {
 
               {/* Multiple Files Upload */}
               <div>
-                <h3 className="mb-3 text-lg font-semibold">
+                <h3 className="mb-3 text-lg font-medium">
                   Multiple Documents Upload
                 </h3>
                 <AppFileDropzone
@@ -235,21 +235,21 @@ export default function KiboDemoPage() {
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">1. Kibo UI Layer</h3>
+                  <h3 className="mb-2 font-medium">1. Kibo UI Layer</h3>
                   <p className="text-muted-foreground text-sm">
                     Raw components from{" "}
                     <code className="text-xs">@/components/kibo-ui/</code>
                   </p>
                 </div>
                 <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">2. Wrapper Layer</h3>
+                  <h3 className="mb-2 font-medium">2. Wrapper Layer</h3>
                   <p className="text-muted-foreground text-sm">
                     Re-exported from{" "}
                     <code className="text-xs">@/components/kibo/</code>
                   </p>
                 </div>
                 <div className="rounded-lg border p-4">
-                  <h3 className="mb-2 font-semibold">3. App Layer</h3>
+                  <h3 className="mb-2 font-medium">3. App Layer</h3>
                   <p className="text-muted-foreground text-sm">
                     Simplified API in{" "}
                     <code className="text-xs">@/components/app/</code>

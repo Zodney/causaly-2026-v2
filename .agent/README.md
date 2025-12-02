@@ -34,7 +34,6 @@ Welcome to the Causaly 2026 documentation hub. This folder contains all critical
 - Detailed project structure
 - Architecture principles (3-layer component model)
 - Theme system architecture
-- Visualization integration
 - Component usage patterns
 - Data flow diagrams
 - Integration points (APIs, external services)
@@ -45,7 +44,7 @@ Welcome to the Causaly 2026 documentation hub. This folder contains all critical
 - Next.js 16 App Router architecture
 - Component layering (Routes → App Wrappers → Raw Libraries)
 - Theme-first design with CSS variables
-- Kibo UI, AI SDK, and visualization integration
+- Kibo UI and AI SDK integration
 - File organization and import rules
 
 ---
@@ -62,9 +61,8 @@ Welcome to the Causaly 2026 documentation hub. This folder contains all critical
 - Adding new pages
 - Adding shadcn/ui components
 - Creating app wrappers (Kibo & AI)
-- Creating custom visualizations (Vega-Lite & Mermaid)
 - Extension guidelines
-- Common patterns (cards, charts, forms)
+- Common patterns (cards, forms)
 - Troubleshooting guide
 
 **Future SOPs:**
@@ -140,11 +138,6 @@ tasks/
 → [project_architecture.md](system/project_architecture.md) - "Integration Points" section
 → [src/app/api/chat/route.ts](../src/app/api/chat/route.ts) - Example API route
 
-#### **Visualizations**
-→ [coding_patterns.md](sop/coding_patterns.md) - "Creating Custom Visualizations" section
-→ [project_architecture.md](system/project_architecture.md) - "Visualization Integration" section
-→ [src/app/demo/viz/page.tsx](../src/app/demo/viz/page.tsx) - Working examples
-
 #### **AI Features**
 → [project_architecture.md](system/project_architecture.md) - "AI Integration" section
 → [src/app/demo/ai/page.tsx](../src/app/demo/ai/page.tsx) - Working chat example
@@ -190,8 +183,6 @@ tasks/
 - [Radix UI Docs](https://www.radix-ui.com/)
 - [TanStack Table Docs](https://tanstack.com/table/)
 - [AI SDK Docs](https://sdk.vercel.ai/docs)
-- [Vega-Lite Docs](https://vega.github.io/vega-lite/)
-- [Mermaid Docs](https://mermaid.js.org/)
 - [TypeScript Docs](https://www.typescriptlang.org/docs/)
 
 ### Project-Specific Guides
@@ -213,7 +204,6 @@ tasks/
 ### Documentation Style
 - Use Markdown for all documentation
 - Include code examples with syntax highlighting
-- Add diagrams where helpful (Mermaid is available)
 - Use emoji sparingly for visual organization (📂, 🎯, etc.)
 - Keep line length reasonable (80-100 characters when possible)
 
@@ -229,6 +219,6 @@ If you can't find what you need in the documentation:
 
 ---
 
-**Last Updated:** 2025-11-28
+**Last Updated:** 2025-12-01
 **Maintainers:** Development Team
-**Version:** 1.0.0
+**Version:** 1.0.1

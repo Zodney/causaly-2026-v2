@@ -53,21 +53,21 @@ export default function AIDemoPage() {
           {/* Status indicator */}
           {!process.env.NEXT_PUBLIC_OPENAI_CONFIGURED && (
             <div className="flex items-center gap-2 text-sm bg-warning/10 border border-warning/20 rounded-radius p-3">
-              <span className="font-semibold">⚠️ Configuration needed:</span>
+              <span className="font-medium">⚠️ Configuration needed:</span>
               <span>Add OPENAI_API_KEY to your .env.local file to enable chat.</span>
             </div>
           )}
 
           {error && (
             <div className="flex items-center gap-2 text-sm bg-destructive/10 border border-destructive/20 rounded-radius p-3">
-              <span className="font-semibold">❌ Error:</span>
+              <span className="font-medium">❌ Error:</span>
               <span>{error.message}</span>
             </div>
           )}
 
           {messages.length === 0 && !error && (
             <div className="flex items-center gap-2 text-sm bg-success/10 border border-success/20 rounded-radius p-3">
-              <span className="font-semibold">✅ Ready:</span>
+              <span className="font-medium">✅ Ready:</span>
               <span>AI backend is connected. Start chatting below!</span>
             </div>
           )}
@@ -78,7 +78,7 @@ export default function AIDemoPage() {
           {/* Chat Panel */}
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">
+              <h2 className="text-xl font-medium text-foreground mb-2">
                 Chat Interface
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -99,7 +99,7 @@ export default function AIDemoPage() {
           {/* Reasoning Panel */}
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">
+              <h2 className="text-xl font-medium text-foreground mb-2">
                 Reasoning Trace
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -136,12 +136,12 @@ export default function AIDemoPage() {
 
         {/* Setup Guide */}
         <div className="mt-12 p-6 bg-card border border-border rounded-radius">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
+          <h3 className="text-lg font-medium text-foreground mb-4">
             🔧 Setup Instructions
           </h3>
           <div className="space-y-4 text-sm text-muted-foreground">
             <div>
-              <p className="font-semibold text-foreground mb-2">
+              <p className="font-medium text-foreground mb-2">
                 1. Create a .env.local file in the project root:
               </p>
               <code className="block bg-muted p-3 rounded text-xs font-mono">
@@ -149,7 +149,7 @@ export default function AIDemoPage() {
               </code>
             </div>
             <div>
-              <p className="font-semibold text-foreground mb-2">
+              <p className="font-medium text-foreground mb-2">
                 2. Get your API key from OpenAI:
               </p>
               <a
@@ -162,7 +162,7 @@ export default function AIDemoPage() {
               </a>
             </div>
             <div>
-              <p className="font-semibold text-foreground mb-2">
+              <p className="font-medium text-foreground mb-2">
                 3. Restart the development server:
               </p>
               <code className="block bg-muted p-3 rounded text-xs font-mono">
@@ -170,7 +170,7 @@ export default function AIDemoPage() {
               </code>
             </div>
             <div className="pt-2 border-t border-border">
-              <p className="font-semibold text-foreground mb-2">
+              <p className="font-medium text-foreground mb-2">
                 💡 Want to use a different AI provider?
               </p>
               <p>

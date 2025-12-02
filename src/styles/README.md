@@ -26,9 +26,6 @@ This directory contains the design token and theming configuration for the proje
   Brand colored element
 </div>
 
-// Use chart colors for data visualization
-<div className="bg-chart-1">Data point 1</div>
-<div className="bg-chart-2">Data point 2</div>
 ```
 
 ### In Custom CSS
@@ -38,40 +35,6 @@ This directory contains the design token and theming configuration for the proje
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border-radius: var(--radius);
-}
-```
-
-### For Data Visualization Libraries
-
-#### Vega-Lite
-
-```typescript
-const vegaSpec = {
-  // ...
-  config: {
-    range: {
-      category: [
-        'hsl(var(--chart-1))',
-        'hsl(var(--chart-2))',
-        'hsl(var(--chart-3))',
-        // ... up to chart-9
-      ]
-    }
-  }
-}
-```
-
-#### Mermaid
-
-```typescript
-const mermaidConfig = {
-  theme: 'base',
-  themeVariables: {
-    primaryColor: 'hsl(var(--primary))',
-    primaryBorderColor: 'hsl(var(--border))',
-    primaryTextColor: 'hsl(var(--primary-foreground))',
-    // ... map other tokens as needed
-  }
 }
 ```
 
@@ -95,14 +58,84 @@ const mermaidConfig = {
 ### Brand Scale
 - `brand-50` through `brand-900` - Brand color scale
 
-### Chart Colors
-- `chart-1` through `chart-9` - Categorical chart colors
-
-### Sequential Colors
-- `seq-1` through `seq-6` - Sequential scale for heatmaps
-
 ### Border Radius
 - `radius-sm`, `radius`, `radius-md`, `radius-lg`, `radius-xl`
+
+### Border Colors
+- `border-subtle` - Very light, minimal contrast (dividers in low-emphasis areas)
+- `border-light` - Lighter than default (subtle separations)
+- `border` - Default border color (standard UI elements)
+- `border-medium` - Medium intensity (forms, interactive elements)
+- `border-strong` - High contrast (emphasis, focus states)
+
+## Border Color System
+
+The theme provides five border intensity tiers for flexible styling using the OKLch color space.
+
+### Available Border Colors
+
+| Class | Use Case | Example |
+|-------|----------|---------|
+| `border-subtle` | Low-emphasis dividers, background separators | `<hr className="border-subtle" />` |
+| `border-light` | Secondary content boundaries, nested containers | `<div className="border-light border" />` |
+| `border` | Standard UI elements, cards, dialogs (default) | `<div className="border rounded-lg" />` |
+| `border-medium` | Form inputs, interactive elements, table borders | `<input className="border-medium" />` |
+| `border-strong` | Emphasis, selected states, high-priority boundaries | `<button className="border-strong" />` |
+
+### Usage Examples
+
+```tsx
+// Subtle divider between sections
+<div className="border-subtle border-b" />
+
+// Default card border (existing behavior)
+<div className="border rounded-lg p-4">
+  Card content
+</div>
+
+// Strong form field border for emphasis
+<input className="border-medium rounded-md focus:border-strong" />
+
+// Interactive button with medium border that strengthens on hover
+<button className="border-medium hover:border-strong transition-colors">
+  Click me
+</button>
+
+// Table with light row separators
+<table className="[&_tr]:border-light [&_tr]:border-b">
+  <tbody>
+    <tr><td>Row 1</td></tr>
+    <tr><td>Row 2</td></tr>
+  </tbody>
+</table>
+```
+
+### Light/Dark Mode
+
+All border colors automatically adapt to light/dark mode. The same class name produces appropriate contrast in both themes:
+
+- **Light mode:** Darker values create stronger borders
+- **Dark mode:** Lighter values create stronger borders
+
+### Choosing the Right Border
+
+Use this decision guide:
+
+```
+Need stronger border?
+├─ Yes: Try border-medium first
+│   └─ Still too subtle? Use border-strong
+└─ No: Need lighter?
+    ├─ Yes: Try border-light
+    └─ Very subtle? Use border-subtle
+```
+
+**Guidelines:**
+- **subtle**: Background dividers, low-priority separators where structure matters but shouldn't draw attention
+- **light**: Secondary content boundaries, nested containers within cards or sections
+- **default**: Standard UI elements—cards, dialogs, standard table borders (this is the existing `border` class)
+- **medium**: Form inputs, interactive elements, data tables where structure is important
+- **strong**: Emphasis states, selected items, focus rings, high-priority boundaries
 
 ## Dark Mode
 
@@ -123,5 +156,3 @@ These tokens are designed to be compatible with:
 - ✅ shadcn/ui components
 - ✅ Kibo UI (via CSS variable mapping)
 - ✅ AI SDK UI (via Tailwind utilities)
-- ✅ Vega-Lite (via config.range and themeVariables)
-- ✅ Mermaid (via themeVariables)

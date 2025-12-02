@@ -7,10 +7,12 @@ This document contains detailed procedures for common coding tasks. These are St
 ## Table of Contents
 
 1. [Before Making Changes](#before-making-changes)
+   - [Typography Guidelines](#4-typography-guidelines)
+   - [Icon Guidelines](#5-icon-guidelines)
 2. [Adding a New Page](#adding-a-new-page)
 3. [Adding shadcn/ui Components](#adding-shadcnui-components)
 4. [Creating App Wrappers](#creating-app-wrappers)
-5. [Creating Custom Visualizations](#creating-custom-visualizations)
+5. [Updating the Design System Page](#updating-the-design-system-page)
 6. [Extension Guidelines](#extension-guidelines)
 7. [Common Patterns](#common-patterns)
 8. [Troubleshooting](#troubleshooting)
@@ -25,12 +27,10 @@ Always search for similar components before creating new ones:
 
 ```bash
 # Search for similar components
-grep -r "BarChart" src/components/viz/
 grep -r "AppDataTable" src/components/app/
 
 # Check existing wrappers
 ls src/components/app/
-ls src/components/viz/
 ```
 
 ### 2. Understand the Layer
@@ -39,15 +39,68 @@ Determine which layer your component belongs to:
 
 - **Primitive (shadcn/ui)?** → Use directly in routes
 - **Complex block (Kibo/AI)?** → Create/use wrapper in `src/components/app/`
-- **Visualization?** → Use/extend wrapper in `src/components/viz/`
 
 ### 3. Check Theme Integration
 
 Before styling:
 
 - **Light/dark mode?** → Use CSS variables
-- **Using colors?** → Use `--primary`, `--chart-*`, or `--seq-*` tokens
+- **Using colors?** → Use `--primary`, `--secondary`, `--accent` tokens
 - **Custom styling?** → Extend Tailwind classes, don't hardcode
+
+### 4. Typography Guidelines
+
+**Font Weight Rules (CRITICAL):**
+
+- **NEVER use `font-semibold`** → Use `font-medium` instead
+- **Allowed font weights:** `font-normal`, `font-medium`, `font-bold`
+- **Prohibited:** `font-semibold`, `font-[600]`
+
+```typescript
+// ❌ WRONG - Never use semibold
+<h3 className="text-xl font-semibold">Title</h3>
+
+// ✅ CORRECT - Use medium for emphasis
+<h3 className="text-xl font-medium">Title</h3>
+
+// ✅ CORRECT - Use bold for strong emphasis
+<h1 className="text-4xl font-bold">Heading</h1>
+
+// ✅ CORRECT - Use normal for body text
+<p className="text-base font-normal">Body text</p>
+```
+
+### 5. Icon Guidelines
+
+**Lucide Icon Rules (CRITICAL):**
+
+- **ALWAYS use `strokeWidth={1.5}`** for all Lucide icons
+- Use consistent sizing with Tailwind's `size-*` utilities
+- Common sizes: `size-4` (16px), `size-5` (20px), `size-6` (24px)
+
+```typescript
+import { Check, X, Plus } from "lucide-react";
+
+// ❌ WRONG - No strokeWidth specified
+<Check className="size-4" />
+
+// ✅ CORRECT - Always include strokeWidth={1.5}
+<Check className="size-4" strokeWidth={1.5} />
+
+// ✅ CORRECT - Larger icon with consistent stroke
+<Plus className="size-6" strokeWidth={1.5} />
+
+// ✅ CORRECT - Icon in button
+<Button>
+  <X className="size-4" strokeWidth={1.5} />
+  Close
+</Button>
+```
+
+**Why strokeWidth={1.5}?**
+- Provides visual consistency across all icons
+- Matches modern UI design trends
+- Ensures icons remain legible at all sizes
 
 ---
 
@@ -70,14 +123,12 @@ export default function MyPage() {
 
 ```typescript
 import { AppDataTable } from "@/components/app/AppDataTable";
-import { BarChart } from "@/components/viz/BarChart";
 import { Button } from "@/components/ui/button";
 ```
 
 **Never import:**
 - ✗ `@/components/kibo/*` (use app/ wrappers)
 - ✗ `@/components/ai/*` (use app/ wrappers)
-- ✗ Raw libraries (vega-embed, mermaid, etc.)
 
 ### Step 3: Use Theme-Aware Styling
 
@@ -221,224 +272,128 @@ import { AppAgentView } from "@/components/app/AppAgentView";
 
 ---
 
-## Creating Custom Visualizations
+## Updating the Design System Page
 
-### Vega-Lite Charts
+The design system page (`/design-system`) provides a visual cheat sheet of all components in the application. When you add a new component, you should also add it to this page.
 
-#### Simple Charts (Extend Existing)
+### When to Update
 
-```typescript
-// src/components/viz/LineChart.tsx
-"use client";
+Update the design system page when you:
+- Add a new shadcn/ui component to `src/components/ui/`
+- Create a new app wrapper in `src/components/app/`
+- Add a new AI element to `src/components/ai-elements/`
 
-import { VegaChart } from "./VegaChart";
+### Step 1: Locate the Page
 
-export interface LineChartProps {
-  data: Array<{ x: number; y: number }>;
-  xField: string;
-  yField: string;
-  title?: string;
-  width?: number | "container";
-  height?: number;
-}
-
-export function LineChart({
-  data,
-  xField,
-  yField,
-  title,
-  width = "container",
-  height = 400
-}: LineChartProps) {
-  const spec = {
-    mark: "line",
-    data: { values: data },
-    encoding: {
-      x: { field: xField, type: "quantitative" },
-      y: { field: yField, type: "quantitative" },
-    },
-    title,
-  };
-
-  return <VegaChart spec={spec} width={width} height={height} />;
-}
+The design system page is at:
+```
+src/app/design-system/page.tsx
 ```
 
-#### Multi-Series Charts
+### Step 2: Import Your Component
 
-Colors are **automatic** - VegaChart applies the `--chart-*` palette:
-
-```typescript
-// src/components/viz/GroupedBarChart.tsx
-"use client";
-
-import { VegaChart } from "./VegaChart";
-
-export interface GroupedBarChartProps {
-  data: Array<Record<string, any>>;
-  xField: string;
-  categories: string[];
-  title?: string;
-}
-
-export function GroupedBarChart({
-  data,
-  xField,
-  categories,
-  title
-}: GroupedBarChartProps) {
-  const spec = {
-    mark: "bar",
-    data: { values: data },
-    transform: [
-      { fold: categories, as: ["category", "value"] }
-    ],
-    encoding: {
-      x: { field: xField, type: "nominal" },
-      y: { field: "value", type: "quantitative" },
-      color: {
-        field: "category",
-        type: "nominal"
-        // No color scheme needed - auto uses --chart-* palette
-      },
-      xOffset: { field: "category" }
-    },
-    title,
-  };
-
-  return <VegaChart spec={spec} width="container" />;
-}
-```
-
-#### Scatter Plots
+Add the import at the top of the file with the other imports:
 
 ```typescript
-// src/components/viz/ScatterPlot.tsx
-"use client";
+// For UI primitives
+import { YourComponent } from "@/components/ui/your-component";
 
-import { VegaChart } from "./VegaChart";
+// For app components
+import { AppYourComponent } from "@/components/app/AppYourComponent";
 
-export interface ScatterPlotProps {
-  data: Array<{ x: number; y: number; category?: string }>;
-  xField: string;
-  yField: string;
-  colorField?: string;
-  title?: string;
-}
-
-export function ScatterPlot({
-  data,
-  xField,
-  yField,
-  colorField,
-  title,
-}: ScatterPlotProps) {
-  const spec = {
-    mark: "point",
-    data: { values: data },
-    encoding: {
-      x: { field: xField, type: "quantitative" },
-      y: { field: yField, type: "quantitative" },
-      ...(colorField && {
-        color: { field: colorField, type: "nominal" }
-      }),
-    },
-    title,
-  };
-
-  return <VegaChart spec={spec} />;
-}
+// For AI elements
+import { YourAIComponent } from "@/components/ai-elements/your-ai-component";
 ```
 
-**Key Points:**
-- Multi-series colors apply `--chart-*` palette automatically
-- No need to specify color schemes manually
-- Charts adapt to light/dark mode automatically
+### Step 3: Add to the Appropriate Section
 
-#### Sequential Color Scales
+Find the correct section based on your component type:
 
-For heatmaps and gradients, use `type: "quantitative"` - the sequential scale applies automatically:
+**For Primitives (shadcn/ui):**
+Add a new `<Card>` in the Primitives grid:
 
 ```typescript
-// Heatmap automatically uses --seq-* sequential scale
-const heatmapSpec = {
-  mark: "rect",
-  data: { values: heatmapData },
-  encoding: {
-    x: { field: "hour", type: "ordinal" },
-    y: { field: "day", type: "ordinal" },
-    color: {
-      field: "value",
-      type: "quantitative"  // Auto uses --seq-* scale
-    },
-  },
-};
-
-<VegaChart spec={heatmapSpec} />
+<Card>
+  <CardHeader>
+    <CardTitle>YourComponent</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-2">
+    {/* Show different variants */}
+    <YourComponent variant="default">Default</YourComponent>
+    <YourComponent variant="secondary">Secondary</YourComponent>
+  </CardContent>
+</Card>
 ```
 
-### Mermaid Diagrams
-
-#### Flow Diagrams (Extend Existing)
+**For App Components:**
+Add a new `<Card>` in the App Components section:
 
 ```typescript
-// src/components/viz/SequenceDiagram.tsx
-"use client";
-
-import { MermaidDiagram } from "./MermaidDiagram";
-
-export interface SequenceDiagramProps {
-  actors: string[];
-  messages: Array<{ from: string; to: string; text: string }>;
-}
-
-export function SequenceDiagram({ actors, messages }: SequenceDiagramProps) {
-  const dsl = `
-    sequenceDiagram
-      ${actors.map(a => `participant ${a}`).join('\n')}
-      ${messages.map(m => `${m.from}->>${m.to}: ${m.text}`).join('\n')}
-  `;
-
-  return <MermaidDiagram chart={dsl} />;
-}
+<Card>
+  <CardHeader>
+    <CardTitle>AppYourComponent</CardTitle>
+    <CardDescription>Brief description of what it does</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <AppYourComponent
+      // Add minimal sample props
+      sampleProp="value"
+    />
+  </CardContent>
+</Card>
 ```
 
-#### Gantt Charts
+**For AI Elements:**
+Add a new `<Card>` in the AI Elements grid:
 
 ```typescript
-// src/components/viz/GanttDiagram.tsx
-"use client";
-
-import { MermaidDiagram } from "./MermaidDiagram";
-
-export interface GanttTask {
-  id: string;
-  name: string;
-  start: string;
-  duration: string;
-}
-
-export interface GanttDiagramProps {
-  title: string;
-  tasks: GanttTask[];
-}
-
-export function GanttDiagram({ title, tasks }: GanttDiagramProps) {
-  const dsl = `
-    gantt
-      title ${title}
-      dateFormat YYYY-MM-DD
-      ${tasks.map(t => `${t.name} :${t.id}, ${t.start}, ${t.duration}`).join('\n')}
-  `;
-
-  return <MermaidDiagram chart={dsl} />;
-}
+<Card>
+  <CardHeader>
+    <CardTitle>YourAIComponent</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <YourAIComponent />
+  </CardContent>
+</Card>
 ```
 
-**Key Points:**
-- MermaidDiagram reads CSS variables automatically via `hslToHex()` utility
-- Theme integration is automatic - adapts to light/dark mode
-- No manual color configuration needed
+### Step 4: Test
+
+1. Run the dev server: `npm run dev`
+2. Navigate to `/design-system`
+3. Verify your component appears and renders correctly
+4. Test that live editing works (edit component → see update)
+
+### Example: Adding a New Badge Variant
+
+```typescript
+// 1. Import (already imported)
+import { Badge } from "@/components/ui/badge";
+
+// 2. Find the Badge card in Primitives section
+<Card>
+  <CardHeader>
+    <CardTitle>Badge</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-2">
+    <div className="flex flex-wrap gap-2">
+      <Badge>Default</Badge>
+      <Badge variant="secondary">Secondary</Badge>
+      <Badge variant="outline">Outline</Badge>
+      <Badge variant="destructive">Destructive</Badge>
+      {/* ADD YOUR NEW VARIANT */}
+      <Badge variant="success">Success</Badge>
+    </div>
+  </CardContent>
+</Card>
+```
+
+### Tips
+
+- **Keep it simple:** Just show the component, no complex examples
+- **Show variants:** If the component has variants, show them all
+- **Use sample data:** Use minimal, realistic sample data for complex components
+- **Test responsiveness:** Check on mobile, tablet, and desktop
 
 ---
 
@@ -489,60 +444,13 @@ Standard card with theme-aware colors:
 
 ```typescript
 <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-  <h3 className="text-xl font-semibold text-foreground">Title</h3>
+  <h3 className="text-xl font-medium text-foreground">Title</h3>
   <p className="text-muted-foreground">Description</p>
   <Button className="w-full">Action</Button>
 </div>
 ```
 
-### Pattern 2: Multi-Series Chart
-
-Data with multiple series automatically uses chart palette:
-
-```typescript
-// Data with multiple series
-const data = [
-  { month: "Jan", sales: 30, costs: 20, profit: 10 },
-  { month: "Feb", sales: 35, costs: 22, profit: 13 },
-];
-
-// Vega spec - automatically uses --chart-* palette
-const spec = {
-  mark: "bar",
-  data: { values: data },
-  transform: [
-    { fold: ["sales", "costs", "profit"], as: ["category", "value"] }
-  ],
-  encoding: {
-    x: { field: "month", type: "nominal" },
-    y: { field: "value", type: "quantitative" },
-    color: { field: "category", type: "nominal" },  // Auto themed
-  },
-};
-
-<VegaChart spec={spec} />
-```
-
-### Pattern 3: Heatmap with Sequential Scale
-
-Heatmaps automatically use sequential scale:
-
-```typescript
-// VegaChart automatically uses --seq-* for quantitative color scales
-const heatmapSpec = {
-  mark: "rect",
-  data: { values: heatmapData },
-  encoding: {
-    x: { field: "hour", type: "ordinal" },
-    y: { field: "day", type: "ordinal" },
-    color: { field: "value", type: "quantitative" },  // Auto uses sequential scale
-  },
-};
-
-<VegaChart spec={heatmapSpec} />
-```
-
-### Pattern 4: Responsive Layout
+### Pattern 2: Responsive Layout
 
 Use container queries and responsive grid:
 
@@ -558,7 +466,7 @@ Use container queries and responsive grid:
 </div>
 ```
 
-### Pattern 5: Form with Validation
+### Pattern 3: Form with Validation
 
 ```typescript
 "use client";
@@ -626,22 +534,6 @@ export function MyForm() {
 - `bg-primary`, `text-primary-foreground`
 - `border-border`, `ring-ring`
 
-### Issue: Chart Colors Don't Match Theme
-
-**Problem:** Vega chart colors are wrong
-
-**Solution:** Make sure you're using VegaChart wrapper, not raw vega-embed:
-
-```typescript
-// ❌ Wrong
-import vegaEmbed from "vega-embed";
-
-// ✅ Correct
-import { VegaChart } from "@/components/viz/VegaChart";
-```
-
-**Why:** VegaChart applies theme colors automatically. Raw vega-embed doesn't know about our CSS variables.
-
 ### Issue: Can't Import Kibo/AI Component
 
 **Problem:** Import fails or component not themed
@@ -661,49 +553,18 @@ import { AppDataTable } from "@/components/app/AppDataTable";
 - Simplified API
 - Consistent styling
 
-### Issue: TypeScript Errors in Visualization Components
-
-**Problem:** `getCSSVariable is not defined` or similar
-
-**Solution:** Check that color utilities are imported:
-
-```typescript
-import { getCSSVariable } from "@/lib/color-utils";
-```
-
-### Issue: Mermaid Diagram Not Rendering
-
-**Problem:** Diagram doesn't show or throws error
-
-**Solution:**
-1. Check Mermaid DSL syntax is valid
-2. Ensure component is client-side: `"use client"`
-3. Verify `MermaidDiagram` wrapper is used, not raw mermaid
-
-```typescript
-// ✅ Correct
-"use client";
-
-import { MermaidDiagram } from "@/components/viz/MermaidDiagram";
-
-const dsl = `graph TD
-  A-->B`;
-
-<MermaidDiagram chart={dsl} />
-```
-
 ### Issue: Hydration Mismatch
 
 **Problem:** React hydration error in console
 
-**Solution:** For client-only components (charts, diagrams):
+**Solution:** For client-only components:
 
 ```typescript
 "use client";
 
 import { useEffect, useState } from "react";
 
-export function MyChart() {
+export function MyClientComponent() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -714,7 +575,7 @@ export function MyChart() {
     return <div>Loading...</div>;
   }
 
-  return <VegaChart spec={spec} />;
+  return <div>Client-only content</div>;
 }
 ```
 
