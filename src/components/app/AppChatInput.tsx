@@ -40,6 +40,7 @@ import {
   Lightbulb,
   Code,
   BarChart,
+  X,
 } from "lucide-react";
 
 // Types
@@ -189,46 +190,65 @@ export function AppChatInput({
             className="flex w-full items-center justify-between gap-1 p-4 order-last !has-[>button]:ml-0 !has-[>kbd]:ml-0"
           >
             {/* Left Side: Configuration Buttons */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {/* 1. Expert Agents Dropdown */}
               {showAgentSelector && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
+                <div className="relative">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "font-medium transition-all duration-200 cursor-pointer",
+                          currentAgent
+                            ? "bg-secondary text-primary border-primary hover:bg-secondary hover:text-primary pr-8"
+                            : "bg-background text-foreground border-input hover:text-muted-foreground hover:bg-accent"
+                        )}
+                      >
+                        <Sparkles className="size-4" strokeWidth={1.5} />
+                        <span>
+                          {currentAgent
+                            ? agentOptions.find((a) => a.id === currentAgent)?.label
+                            : "Expert Agents"}
+                        </span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-48">
+                      <DropdownMenuLabel>Select Agent</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={currentAgent || ""}
+                        onValueChange={handleAgentChange}
+                      >
+                        {agentOptions.map((agent) => (
+                          <DropdownMenuRadioItem key={agent.id} value={agent.id}>
+                            <agent.icon className="mr-2 size-4" />
+                            {agent.label}
+                          </DropdownMenuRadioItem>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {currentAgent && (
+                    <button
                       type="button"
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "font-medium transition-all duration-200 cursor-pointer",
-                        currentAgent
-                          ? "bg-secondary text-primary border-primary hover:bg-secondary hover:text-primary"
-                          : "bg-background text-foreground border-input hover:text-muted-foreground hover:bg-accent"
-                      )}
+                      className="bg-primary/10 absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-card transition-colors cursor-pointer z-10"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAgentChange(currentAgent);
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     >
-                      <Sparkles className="size-4" strokeWidth={1.5} />
-                      <span>
-                        {currentAgent
-                          ? agentOptions.find((a) => a.id === currentAgent)?.label
-                          : "Expert Agents"}
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
-                    <DropdownMenuLabel>Select Agent</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup
-                      value={currentAgent || ""}
-                      onValueChange={handleAgentChange}
-                    >
-                      {agentOptions.map((agent) => (
-                        <DropdownMenuRadioItem key={agent.id} value={agent.id}>
-                          <agent.icon className="mr-2 size-4" />
-                          {agent.label}
-                        </DropdownMenuRadioItem>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <X className="size-3.5 text-primary" strokeWidth={2} />
+                    </button>
+                  )}
+                </div>
               )}
 
               {/* 2. Deep Research Toggle */}
@@ -279,6 +299,7 @@ export function AppChatInput({
                         key={source.id}
                         checked={currentDataSources.includes(source.id)}
                         onCheckedChange={() => toggleDataSource(source.id)}
+                        onSelect={(e) => e.preventDefault()}
                       >
                         {source.label}
                       </DropdownMenuCheckboxItem>

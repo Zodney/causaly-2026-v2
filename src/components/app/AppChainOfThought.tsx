@@ -26,6 +26,7 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -103,12 +104,23 @@ export function AppChainOfThought({
   // Determine if any steps are currently processing
   const isProcessing = activeCount > 0;
 
-  // Calculate open state: open during processing OR when explicitly set
-  const shouldBeOpen = !defaultCollapsed || isProcessing;
+  // Local state for manual control
+  const [isOpen, setIsOpen] = useState(!defaultCollapsed);
+
+  // Auto-open when processing starts, auto-close when processing ends
+  useEffect(() => {
+    if (isProcessing) {
+      setIsOpen(true);
+    } else if (completedCount === totalCount && totalCount > 0) {
+      // Auto-collapse when all steps are complete
+      setIsOpen(false);
+    }
+  }, [isProcessing, completedCount, totalCount]);
 
   return (
     <ChainOfThought
-      defaultOpen={shouldBeOpen}
+      open={isOpen}
+      onOpenChange={setIsOpen}
       className={cn(
         "rounded-lg border border-border bg-card p-4",
         "transition-all duration-300",
@@ -121,8 +133,8 @@ export function AppChainOfThought({
       <div className="flex items-center justify-between">
         <ChainOfThoughtHeader className="flex-1">
           <span className="flex items-center gap-2">
-            <span className="font-medium text-foreground">
-              AI Reasoning
+            <span className="text-xs font-medium text-foreground">
+              Reasoning
             </span>
             <Badge
               variant="secondary"

@@ -50,7 +50,7 @@ export function AppNavBar() {
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "text-foreground hover:bg-accent hover:text-accent-foreground",
+                  "font-normal text-foreground hover:bg-accent hover:text-accent-foreground",
                   pathname === item.href && "bg-accent text-foreground"
                 )}
                 asChild
