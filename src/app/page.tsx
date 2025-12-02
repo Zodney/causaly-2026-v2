@@ -269,7 +269,7 @@ export default function AgenticResearchPage() {
       </div>
 
       {/* Panel 2: Main Chat Interface */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-white">
+      <div className="flex flex-1 flex-col overflow-hidden bg-card">
         {/* Messages Area - Full Width with Scrollbar at Edge */}
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto w-full max-w-[800px] px-5">

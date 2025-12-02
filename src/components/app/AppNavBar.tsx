@@ -4,8 +4,8 @@
  * Sticky top navigation bar that appears across all pages.
  * Features:
  * - Mock logo and navigation links
- * - Design System button and user profile menu
- * - Always displays in light/white theme
+ * - Design System button, theme switcher, and user profile menu
+ * - Theme-aware styling that adapts to light/dark mode
  * - Active route highlighting
  */
 
@@ -25,6 +25,7 @@ import {
 import { CausalyLogo } from "@/components/ui/CausalyLogo";
 import { Briefcase, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppThemeSwitcher } from "@/components/app/AppThemeSwitcher";
 
 export function AppNavBar() {
   const pathname = usePathname();
@@ -37,19 +38,20 @@ export function AppNavBar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 h-14 w-full border-b border-gray-200 bg-white dark:bg-white">
+    <nav className="sticky top-0 z-50 h-14 w-full border-b border-border bg-card">
       <div className="flex h-full items-center justify-between px-6">
         {/* Left: Logo + Nav Links */}
         <div className="flex items-center gap-8">
-          <CausalyLogo className="text-gray-900" />
+          <CausalyLogo className="text-foreground" />
           <div className="flex items-center gap-1">
             {navItems.map((item) => (
               <Button
                 key={item.href}
                 variant="ghost"
+                size="sm"
                 className={cn(
-                  "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
-                  pathname === item.href && "bg-gray-100 text-gray-900"
+                  "text-foreground hover:bg-accent hover:text-accent-foreground",
+                  pathname === item.href && "bg-accent text-foreground"
                 )}
                 asChild
               >
@@ -59,24 +61,26 @@ export function AppNavBar() {
           </div>
         </div>
 
-        {/* Right: Design System + User Menu */}
+        {/* Right: Design System + Theme Switcher + User Menu */}
         <div className="flex items-center gap-3">
           <Button variant="secondary" className="gap-2" asChild>
             <Link href="/design-system">
-              <Briefcase className="size-4" />
+              <Briefcase className="size-4" strokeWidth={1.5} />
               Design System
             </Link>
           </Button>
+
+          <AppThemeSwitcher />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-700"
+                className="text-foreground"
                 aria-label="User menu"
               >
-                <User className="size-5" />
+                <User className="size-5" strokeWidth={1.5} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">

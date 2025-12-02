@@ -169,10 +169,10 @@ export function AppChatInput({
   };
 
   return (
-    <div className="sticky bottom-0 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 px-5 pb-4 pt-0">
+    <div className="sticky bottom-0 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 px-5 pb-4 pt-0">
       <div className="mx-auto w-full max-w-[800px]">
         <form onSubmit={onSubmit} className="w-full">
-          <InputGroup className="relative flex w-full flex-col rounded-2xl border border-input shadow-xs overflow-hidden bg-white">
+          <InputGroup className="relative flex w-full flex-col rounded-2xl border border-input shadow-xs overflow-hidden bg-card">
           {/* Auto-resizing Textarea */}
           <InputGroupTextarea
             value={value}
@@ -201,7 +201,7 @@ export function AppChatInput({
                       className={cn(
                         "font-medium transition-all duration-200 cursor-pointer",
                         currentAgent
-                          ? "bg-secondary text-secondary-foreground border-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
+                          ? "bg-secondary text-primary border-primary hover:bg-secondary hover:text-primary"
                           : "bg-background text-foreground border-input hover:text-muted-foreground hover:bg-accent"
                       )}
                     >
@@ -241,7 +241,7 @@ export function AppChatInput({
                   className={cn(
                     "font-medium transition-all duration-200 cursor-pointer",
                     currentDeepResearch
-                      ? "bg-secondary text-secondary-foreground border-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
+                      ? "bg-secondary text-primary border-primary hover:bg-secondary hover:text-primary"
                       : "bg-background text-foreground border-input hover:text-muted-foreground hover:bg-accent"
                   )}
                 >
@@ -260,7 +260,7 @@ export function AppChatInput({
                       size="sm"
                       className={cn(
                         "font-medium cursor-pointer",
-                        currentDataSources.length > 0 && "bg-accent text-accent-foreground"
+                        currentDataSources.length > 0 && "bg-secondary text-primary border border-primary hover:bg-secondary hover:text-primary"
                       )}
                     >
                       <Settings className="size-4" />
@@ -293,7 +293,7 @@ export function AppChatInput({
               type="submit"
               size="sm"
               disabled={!value.trim() || isLoading}
-              className="font-medium bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer disabled:cursor-not-allowed disabled:bg-secondary disabled:text-foreground"
+              className="font-medium bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer disabled:cursor-not-allowed disabled:bg-secondary disabled:text-foreground px-2"
             >
               {isLoading ? (
                 <Loader size={16} />

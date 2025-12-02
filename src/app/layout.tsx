@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { AppNavBar } from "@/components/app/AppNavBar";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 const robotoSans = Roboto({
   variable: "--font-roboto-sans",
@@ -26,10 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${robotoSans.variable} ${robotoMono.variable}`}>
+    <html lang="en" className={`${robotoSans.variable} ${robotoMono.variable}`} suppressHydrationWarning>
       <body className="antialiased">
-        <AppNavBar />
-        {children}
+        <ThemeProvider>
+          <AppNavBar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
