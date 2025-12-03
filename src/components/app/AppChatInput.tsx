@@ -36,10 +36,6 @@ import {
   ClockFading,
   Settings,
   ArrowUp,
-  MessageSquare,
-  Lightbulb,
-  Code,
-  BarChart,
   X,
 } from "lucide-react";
 
@@ -47,7 +43,7 @@ import {
 export interface AgentOption {
   id: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  description: string;
 }
 
 export interface DataSourceOption {
@@ -87,10 +83,30 @@ export interface AppChatInputProps {
 
 // Default agent options
 const DEFAULT_AGENT_OPTIONS: AgentOption[] = [
-  { id: "general", label: "General Assistant", icon: MessageSquare },
-  { id: "research", label: "Research Expert", icon: Lightbulb },
-  { id: "code", label: "Code Analyst", icon: Code },
-  { id: "data", label: "Data Scientist", icon: BarChart },
+  {
+    id: "general",
+    label: "Preclinical Safety",
+    description:
+      "Analyzing and summarizing preclinical safety data — from toxicology studies to adverse findings.",
+  },
+  {
+    id: "research",
+    label: "Pathway Reconstruction",
+    description:
+      "Reconstructs disease-specific pathways from literature, omics, and interaction networks.",
+  },
+  {
+    id: "code",
+    label: "Bio Graph",
+    description:
+      "Deeper exploration of concepts, relationships, and pathways — without manually chaining multiple searches.",
+  },
+  {
+    id: "data",
+    label: "Pipeline Graph",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam quis blandit risus, ut semper libero.",
+  },
 ];
 
 // Default data source options
@@ -201,7 +217,7 @@ export function AppChatInput({
                         variant="outline"
                         size="sm"
                         className={cn(
-                          "font-medium transition-all duration-200 cursor-pointer",
+                          "text-xs font-medium transition-all duration-200 cursor-pointer",
                           currentAgent
                             ? "bg-secondary text-primary border-primary hover:bg-secondary hover:text-primary pr-8"
                             : "bg-background text-foreground border-input hover:text-muted-foreground hover:bg-accent"
@@ -215,7 +231,7 @@ export function AppChatInput({
                         </span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48">
+                    <DropdownMenuContent align="start" className="w-[300px]">
                       <DropdownMenuLabel>Select Agent</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuRadioGroup
@@ -223,9 +239,19 @@ export function AppChatInput({
                         onValueChange={handleAgentChange}
                       >
                         {agentOptions.map((agent) => (
-                          <DropdownMenuRadioItem key={agent.id} value={agent.id}>
-                            <agent.icon className="mr-2 size-4" />
-                            {agent.label}
+                          <DropdownMenuRadioItem
+                            key={agent.id}
+                            value={agent.id}
+                            className="py-3 pr-8 pl-2 h-auto items-start"
+                          >
+                            <div className="flex flex-col gap-1 flex-1 min-w-0">
+                              <div className="text-sm text-foreground font-medium leading-tight">
+                                {agent.label}
+                              </div>
+                              <div className="text-xs text-accent-foreground leading-tight line-clamp-2">
+                                {agent.description}
+                              </div>
+                            </div>
                           </DropdownMenuRadioItem>
                         ))}
                       </DropdownMenuRadioGroup>
@@ -234,7 +260,7 @@ export function AppChatInput({
                   {currentAgent && (
                     <button
                       type="button"
-                      className="bg-primary/10 absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-card transition-colors cursor-pointer z-10"
+                      className="bg-primary/10 absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-card transition-colors cursor-pointer z-10"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -259,7 +285,7 @@ export function AppChatInput({
                   size="sm"
                   onClick={handleDeepResearchToggle}
                   className={cn(
-                    "font-medium transition-all duration-200 cursor-pointer",
+                    "text-xs font-medium transition-all duration-200 cursor-pointer",
                     currentDeepResearch
                       ? "bg-secondary text-primary border-primary hover:bg-secondary hover:text-primary"
                       : "bg-background text-foreground border-input hover:text-muted-foreground hover:bg-accent"
