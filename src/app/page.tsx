@@ -9,8 +9,9 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChat } from "ai/react";
+import type { Message as AIMessage } from "ai/react";
 import {
   Message,
   MessageContent,
@@ -24,6 +25,7 @@ import { AppChatInput } from "@/components/app/AppChatInput";
 import { AppChainOfThought } from "@/components/app/AppChainOfThought";
 import type { ThoughtStep } from "@/components/app/AppChainOfThought";
 import { generateMockThoughtSteps } from "@/lib/mockThoughtSteps";
+import { getChatHistoryItems, getMockChatById } from "@/lib/mock-data/sample-chats";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -31,7 +33,6 @@ import {
   SquarePen,
   X,
   Copy,
-  RefreshCw,
   BarChart,
   FileText,
   Lightbulb,
@@ -48,7 +49,7 @@ interface ChatHistoryItem {
 
 export default function AgenticResearchPage() {
   // AI SDK hook for chat functionality
-  const { messages, isLoading, input, handleInputChange, handleSubmit, reload } =
+  const { messages, isLoading, input, handleInputChange, handleSubmit, setMessages } =
     useChat({
       api: "/api/chat",
     });
@@ -61,74 +62,21 @@ export default function AgenticResearchPage() {
     Map<string, ThoughtStep[]>
   >(new Map());
 
-  // Mock chat history
-  const [chatHistory] = useState<ChatHistoryItem[]>([
-    {
-      id: "1",
-      title: "Previous research on quantum computing and its applications in modern cryptography",
-      timestamp: "2 hours ago",
-    },
-    {
-      id: "2",
-      title: "Analysis of market trends in artificial intelligence technology sector",
-      timestamp: "Yesterday",
-    },
-    {
-      id: "3",
-      title: "Literature review summary for biomedical engineering research",
-      timestamp: "3 days ago",
-    },
-    {
-      id: "4",
-      title: "Data synthesis project combining multiple research methodologies",
-      timestamp: "1 week ago",
-    },
-    {
-      id: "5",
-      title: "Climate change impact assessment on coastal regions",
-      timestamp: "1 week ago",
-    },
-    {
-      id: "6",
-      title: "Machine learning models for predictive analytics",
-      timestamp: "2 weeks ago",
-    },
-    {
-      id: "7",
-      title: "Comparative analysis of renewable energy sources worldwide",
-      timestamp: "2 weeks ago",
-    },
-    {
-      id: "8",
-      title: "Neural network optimization techniques",
-      timestamp: "3 weeks ago",
-    },
-    {
-      id: "9",
-      title: "Blockchain technology applications in supply chain management systems",
-      timestamp: "3 weeks ago",
-    },
-    {
-      id: "10",
-      title: "Genomic data analysis workflow",
-      timestamp: "1 month ago",
-    },
-    {
-      id: "11",
-      title: "Urban planning and sustainable development strategies",
-      timestamp: "1 month ago",
-    },
-    {
-      id: "12",
-      title: "Cybersecurity threats in IoT devices",
-      timestamp: "1 month ago",
-    },
-  ]);
+  // Track current chat mode: 'live' (real API) or 'mock' (pre-saved)
+  const [chatMode, setChatMode] = useState<"live" | "mock">("live");
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+
+  // Load chat history from mock data
+  const [chatHistory] = useState<ChatHistoryItem[]>(getChatHistoryItems());
 
   // Chat configuration state
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [deepResearchEnabled, setDeepResearchEnabled] = useState(false);
   const [selectedDataSources, setSelectedDataSources] = useState<string[]>([]);
+
+  // Scroll container ref for auto-scrolling to new messages
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Generate and animate mock thought steps when AI is processing
   useEffect(() => {
@@ -205,6 +153,48 @@ export default function AgenticResearchPage() {
     }
   }, [messages, isLoading]);
 
+  // Auto-scroll to new user message when sent
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+
+      // Only scroll when a new user message is added (follow-up question)
+      if (lastMessage.role === "user") {
+        // Use a small timeout to ensure DOM has updated
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "end"
+          });
+        }, 100);
+      }
+    }
+  }, [messages]);
+
+  // Load a mock chat by ID
+  const loadMockChat = (chatId: string) => {
+    const mockChat = getMockChatById(chatId);
+    if (!mockChat) return;
+
+    // Set messages from mock data
+    setMessages(mockChat.messages as AIMessage[]);
+
+    // Set thought steps from mock data
+    setMessageThoughts(mockChat.thoughtSteps);
+
+    // Update state
+    setChatMode("mock");
+    setCurrentChatId(chatId);
+  };
+
+  // Start a new live chat
+  const startNewChat = () => {
+    setMessages([]);
+    setMessageThoughts(new Map());
+    setChatMode("live");
+    setCurrentChatId(null);
+  };
+
   // Handle suggestion clicks
   const handleSuggestionClick = (suggestion: string) => {
     handleInputChange({
@@ -216,11 +206,18 @@ export default function AgenticResearchPage() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
+
+    // If in mock mode, switch to live mode for new messages
+    if (chatMode === "mock") {
+      setChatMode("live");
+      setCurrentChatId(null);
+    }
+
     handleSubmit(e);
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
+    <div className="flex h-full w-full overflow-hidden bg-background">
       {/* Panel 1: Left Sidebar - Chat History */}
       <div className="flex w-[260px] flex-col border-r border-sidebar-border bg-sidebar">
         {/* Header */}
@@ -236,9 +233,7 @@ export default function AgenticResearchPage() {
           <Button
             variant="ghost"
             className="w-full justify-start gap-2"
-            onClick={() => {
-              // TODO: Implement new chat functionality
-            }}
+            onClick={startNewChat}
           >
             <SquarePen className="size-4" strokeWidth={1.5} />
             New chat
@@ -255,10 +250,11 @@ export default function AgenticResearchPage() {
               {chatHistory.map((chat) => (
                 <button
                   key={chat.id}
-                  className="w-full rounded-md px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer transition-colors text-left flex items-center min-w-0"
-                  onClick={() => {
-                    // TODO: Switch to selected chat
-                  }}
+                  className={cn(
+                    "w-full rounded-md px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground cursor-pointer transition-colors text-left flex items-center min-w-0",
+                    currentChatId === chat.id && "bg-sidebar-accent text-sidebar-accent-foreground"
+                  )}
+                  onClick={() => loadMockChat(chat.id)}
                 >
                   <span className="truncate">{chat.title}</span>
                 </button>
@@ -271,7 +267,7 @@ export default function AgenticResearchPage() {
       {/* Panel 2: Main Chat Interface */}
       <div className="flex flex-1 flex-col overflow-hidden bg-card">
         {/* Messages Area - Full Width with Scrollbar at Edge */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden" ref={scrollContainerRef}>
           <div className="mx-auto w-full max-w-[800px] px-5">
             <div className="space-y-4 py-4">
                 {messages.length === 0 ? (
@@ -357,16 +353,6 @@ export default function AgenticResearchPage() {
                                 >
                                   <Copy className="size-4" strokeWidth={1.5} />
                                 </MessageAction>
-                                <MessageAction
-                                  tooltip="Regenerate"
-                                  label="Regenerate response"
-                                  onClick={() => reload()}
-                                >
-                                  <RefreshCw
-                                    className="size-4"
-                                    strokeWidth={1.5}
-                                  />
-                                </MessageAction>
                               </MessageActions>
                             )}
                           </Message>
@@ -399,6 +385,9 @@ export default function AgenticResearchPage() {
                         </MessageContent>
                       </Message>
                     )}
+
+                    {/* Invisible marker for auto-scroll */}
+                    <div ref={messagesEndRef} />
                   </>
                 )}
             </div>

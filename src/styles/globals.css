@@ -310,3 +310,23 @@
     @apply transition-colors duration-200;
   }
 }
+
+/* ============================================
+   Markdown Table Styles (for AI Messages)
+   ============================================ */
+@layer base {
+  /* Table container with border radius and border */
+  [data-slot="table-container"] {
+    @apply rounded-md overflow-hidden border border-border;
+  }
+
+  /* Table base styles */
+  table {
+    @apply border-collapse;
+  }
+
+  /* Style table headers */
+  table thead th {
+    @apply bg-accent text-xs;
+  }
+}

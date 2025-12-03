@@ -28,10 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${robotoSans.variable} ${robotoMono.variable}`} suppressHydrationWarning>
-      <body className="antialiased">
+      <body className="antialiased overflow-hidden h-screen">
         <ThemeProvider>
-          <AppNavBar />
-          {children}
+          <div className="flex flex-col h-screen">
+            <AppNavBar />
+            <div className="flex-1 overflow-hidden">
+              {children}
+            </div>
+          </div>
         </ThemeProvider>
       </body>
     </html>
