@@ -1,7 +1,7 @@
 /**
  * Mermaid Charts Demo Page
  *
- * Playground for experimenting with Mermaid chart styling.
+ * Playground for experimenting with Mermaid diagram styling.
  * Replicates the chat container environment (800px max-width, scrollable panel).
  *
  * Navigate to: http://localhost:3000/demo/charts/mermaid
@@ -9,7 +9,6 @@
 
 "use client";
 
-import Link from "next/link";
 import { AppMermaidChart } from "@/components/app/AppMermaidChart";
 import { SAMPLE_MERMAID_CHARTS } from "@/lib/mock-data/sample-mermaid-charts";
 
@@ -19,19 +18,11 @@ export default function MermaidDemoPage() {
       {/* Header */}
       <div className="border-b border-border bg-card px-5 py-4">
         <div className="mx-auto w-full max-w-[800px]">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Mermaid Charts Demo</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Playground for experimenting with Mermaid chart styling
-              </p>
-            </div>
-            <Link
-              href="/demo/charts/vega"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              View Vega Demo
-            </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Mermaid Charts Demo</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Playground for experimenting with Mermaid diagram styling
+            </p>
           </div>
         </div>
       </div>
@@ -49,6 +40,7 @@ export default function MermaidDemoPage() {
                 <li>• Spacing: 32px between charts (space-y-8)</li>
                 <li>• Scrollable: Vertical overflow with auto scroll</li>
                 <li>• Theme: Automatic light/dark mode switching</li>
+                <li>• Colors: Using --chart-1 through --chart-5 CSS variables</li>
               </ul>
             </div>
 
@@ -67,7 +59,9 @@ export default function MermaidDemoPage() {
               <p className="text-sm text-muted-foreground">
                 <strong>Note:</strong> This page replicates the exact chat container environment
                 for accurate styling experiments. All charts use CSS variables from globals.css
-                and automatically adapt to light/dark mode.
+                and automatically adapt to light/dark mode. Chart colors reference --chart-1 through
+                --chart-5 for consistent theming. Mermaid diagrams are rendered client-side with
+                theme synchronization.
               </p>
             </div>
           </div>

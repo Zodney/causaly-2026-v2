@@ -15,10 +15,10 @@ import type { Message as AIMessage } from "ai/react";
 import {
   Message,
   MessageContent,
-  MessageResponse,
   MessageActions,
   MessageAction,
 } from "@/components/ai-elements/message";
+import { MessageContent as ChartMessageContent } from "@/components/ai/MessageContent";
 import { Loader } from "@/components/ai-elements/loader";
 import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
 import { AppChatInput } from "@/components/app/AppChatInput";
@@ -332,12 +332,8 @@ export default function AgenticResearchPage() {
                       return (
                         <div key={message.id}>
                           <Message from={message.role}>
-                            <MessageContent>
-                              <MessageResponse
-                                parseIncompleteMarkdown={isStreaming}
-                              >
-                                {message.content}
-                              </MessageResponse>
+                            <MessageContent className="w-full">
+                              <ChartMessageContent content={message.content} />
                             </MessageContent>
 
                             {message.role === "assistant" && !isStreaming && (

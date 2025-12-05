@@ -47,12 +47,18 @@ export interface VegaChartProps {
    * @default false
    */
   showActions?: boolean;
+
+  /**
+   * Callback when Vega view is ready (for downloads, etc.)
+   */
+  onViewReady?: (view: any) => void;
 }
 
 export function VegaChart({
   spec,
   className = '',
   showActions = false,
+  onViewReady,
 }: VegaChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -159,7 +165,7 @@ export function VegaChart({
   }
 
   return (
-    <div ref={containerRef} className={`vega-container ${className}`}>
+    <div ref={containerRef} className={`vega-container w-full ${className}`}>
       {containerWidth > 0 && (
         <VegaEmbed
           spec={themedSpec as VisualizationSpec}
@@ -171,6 +177,8 @@ export function VegaChart({
             console.error('Vega rendering error:', err);
             setError((err as Error)?.message || 'Failed to render chart');
           }}
+          // @ts-ignore - onNewView exists but types are incorrect in @types/react-vega
+          onNewView={onViewReady}
         />
       )}
     </div>

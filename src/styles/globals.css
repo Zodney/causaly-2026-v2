@@ -329,4 +329,35 @@
   table thead th {
     @apply bg-accent text-xs;
   }
+
+  /* ============================================
+     Chart Container Styles
+     Ensure charts fill the full width of their container
+     ============================================ */
+  .mermaid-container,
+  .vega-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Mermaid container - center align content */
+  .mermaid-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Mermaid SVG responsiveness */
+  .mermaid-container svg {
+    width: 100% !important;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Vega-Lite canvas responsiveness */
+  .vega-container canvas {
+    width: 100% !important;
+    max-width: 100%;
+    height: auto;
+  }
 }

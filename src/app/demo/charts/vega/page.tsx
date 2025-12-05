@@ -9,7 +9,6 @@
 
 "use client";
 
-import Link from "next/link";
 import { AppVegaChart } from "@/components/app/AppVegaChart";
 import { SAMPLE_VEGA_SPECS } from "@/lib/mock-data/sample-vega-specs";
 
@@ -19,19 +18,11 @@ export default function VegaDemoPage() {
       {/* Header */}
       <div className="border-b border-border bg-card px-5 py-4">
         <div className="mx-auto w-full max-w-[800px]">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Vega-Lite Charts Demo</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Playground for experimenting with Vega-Lite chart styling
-              </p>
-            </div>
-            <Link
-              href="/demo/charts/mermaid"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              View Mermaid Demo
-            </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Vega-Lite Charts Demo</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Playground for experimenting with Vega-Lite chart styling
+            </p>
           </div>
         </div>
       </div>
