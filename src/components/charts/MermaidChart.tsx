@@ -85,6 +85,7 @@ export function MermaidChart({
           chart3: '#4f46e5',
           chart4: '#4338ca',
           chart5: '#3730a3',
+          labelBackground: '#4338ca', // Label background for dark mode
         } : {
           // Light mode colors
           background: '#ffffff',
@@ -97,6 +98,7 @@ export function MermaidChart({
           chart3: '#4338ca',
           chart4: '#3730a3',
           chart5: '#312e81',
+          labelBackground: '#c7d2fe', // Lighter purple for light mode
         };
 
         // Initialize Mermaid with theme-aware configuration
@@ -122,6 +124,8 @@ export function MermaidChart({
             background: colors.card,
             mainBkg: colors.card,
             secondaryBkg: colors.muted,
+            labelBkg: colors.labelBackground,
+            edgeLabelBackground: colors.labelBackground,
 
             // Lines and borders
             lineColor: colors.border,
@@ -201,7 +205,7 @@ export function MermaidChart({
   return (
     <div
       ref={containerRef}
-      className={`mermaid-container w-full ${className}`}
+      className={`mermaid-container w-full flex items-center justify-center ${className}`}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

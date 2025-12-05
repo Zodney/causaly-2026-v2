@@ -59,8 +59,8 @@ export default function AgenticResearchPage() {
 
   // Chain-of-thought state: Map of message ID to thought steps
   const [messageThoughts, setMessageThoughts] = useState<
-    Map<string, ThoughtStep[]>
-  >(new Map());
+    Record<string, ThoughtStep[]>
+  >({});
 
   // Track current chat mode: 'live' (real API) or 'mock' (pre-saved)
   const [chatMode, setChatMode] = useState<"live" | "mock">("live");
@@ -90,14 +90,13 @@ export default function AgenticResearchPage() {
         // Use a temporary ID for the assistant message (will be updated when it arrives)
         const tempAssistantId = `assistant-${lastMessage.id}`;
 
-        setMessageThoughts((prev) => new Map(prev).set(tempAssistantId, steps));
+        setMessageThoughts((prev) => ({ ...prev, [tempAssistantId]: steps }));
 
         // Simulate progressive step completion
         let currentStepIndex = 0;
         const interval = setInterval(() => {
           setMessageThoughts((prev) => {
-            const updated = new Map(prev);
-            const steps = updated.get(tempAssistantId);
+            const steps = prev[tempAssistantId];
             if (!steps) return prev;
 
             const updatedSteps = steps.map((step, idx) => {
@@ -110,8 +109,7 @@ export default function AgenticResearchPage() {
               return step;
             });
 
-            updated.set(tempAssistantId, updatedSteps);
-            return updated;
+            return { ...prev, [tempAssistantId]: updatedSteps };
           });
 
           currentStepIndex++;
@@ -135,18 +133,15 @@ export default function AgenticResearchPage() {
       const tempId = `assistant-${lastUserMessage?.id}`;
 
       setMessageThoughts((prev) => {
-        if (prev.has(tempId)) {
-          const updated = new Map(prev);
-          const steps = updated.get(tempId);
-          updated.delete(tempId);
-          if (steps) {
-            // Mark all steps complete when response finishes
-            updated.set(
-              lastAssistantMessage.id,
-              steps.map((s) => ({ ...s, status: "complete" as const }))
-            );
-          }
-          return updated;
+        if (prev[tempId]) {
+          const steps = prev[tempId];
+          const { [tempId]: _, ...rest } = prev;
+
+          // Mark all steps complete when response finishes
+          return {
+            ...rest,
+            [lastAssistantMessage.id]: steps.map((s) => ({ ...s, status: "complete" as const }))
+          };
         }
         return prev;
       });
@@ -190,7 +185,7 @@ export default function AgenticResearchPage() {
   // Start a new live chat
   const startNewChat = () => {
     setMessages([]);
-    setMessageThoughts(new Map());
+    setMessageThoughts({});
     setChatMode("live");
     setCurrentChatId(null);
   };
@@ -325,9 +320,9 @@ export default function AgenticResearchPage() {
                       const nextMessage = messages[index + 1];
                       const thoughtSteps =
                         message.role === "user"
-                          ? messageThoughts.get(nextMessage?.id) ||
-                            messageThoughts.get(`assistant-${message.id}`)
-                          : messageThoughts.get(message.id);
+                          ? messageThoughts[nextMessage?.id] ||
+                            messageThoughts[`assistant-${message.id}`]
+                          : messageThoughts[message.id];
 
                       return (
                         <div key={message.id}>

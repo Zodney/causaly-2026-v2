@@ -13,7 +13,7 @@ export interface MockChat {
   title: string;
   timestamp: string;
   messages: Message[];
-  thoughtSteps: Map<string, ThoughtStep[]>; // Maps message ID to thought steps
+  thoughtSteps: Record<string, ThoughtStep[]>; // Maps message ID to thought steps
 }
 
 export const SAMPLE_CHATS: MockChat[] = [
@@ -66,53 +66,40 @@ The quantum threat is real but manageable with proactive preparation.`,
         createdAt: new Date("2024-12-03T10:00:15"),
       },
     ],
-    thoughtSteps: new Map([
-      [
-        "msg-1-assistant",
-        [
-          {
-            id: "step-1-1",
-            phase: "understand",
-            title: "Analyzing Query Scope",
-            description: "Breaking down the question into quantum computing developments and cryptographic impacts",
-            status: "complete",
-            duration: 1.2,
-          },
-          {
-            id: "step-1-2",
-            phase: "research",
-            title: "Searching Academic Databases",
-            description: "Querying arXiv, IEEE, and ACM for 2024 quantum computing papers",
-            status: "complete",
-            duration: 2.8,
-          },
-          {
-            id: "step-1-3",
-            phase: "research",
-            title: "Retrieving Industry Reports",
-            description: "Accessing IBM, Google, and NIST quantum computing updates",
-            status: "complete",
-            duration: 1.9,
-          },
-          {
-            id: "step-1-4",
-            phase: "analyze",
-            title: "Evaluating Cryptographic Vulnerabilities",
-            description: "Assessing impact of quantum algorithms on current encryption standards",
-            status: "complete",
-            duration: 2.3,
-          },
-          {
-            id: "step-1-5",
-            phase: "synthesize",
-            title: "Compiling Comprehensive Response",
-            description: "Integrating findings into actionable recommendations",
-            status: "complete",
-            duration: 1.5,
-          },
-        ],
+    thoughtSteps: {
+      "msg-1-assistant": [
+        {
+          id: "step-1-1",
+          title: "Analyzing Query Scope",
+          description: "Breaking down the question into quantum computing developments and cryptographic impacts",
+          status: "complete",
+        },
+        {
+          id: "step-1-2",
+          title: "Searching Academic Databases",
+          description: "Querying arXiv, IEEE, and ACM for 2024 quantum computing papers",
+          status: "complete",
+        },
+        {
+          id: "step-1-3",
+          title: "Retrieving Industry Reports",
+          description: "Accessing IBM, Google, and NIST quantum computing updates",
+          status: "complete",
+        },
+        {
+          id: "step-1-4",
+          title: "Evaluating Cryptographic Vulnerabilities",
+          description: "Assessing impact of quantum algorithms on current encryption standards",
+          status: "complete",
+        },
+        {
+          id: "step-1-5",
+          title: "Compiling Comprehensive Response",
+          description: "Integrating findings into actionable recommendations",
+          status: "complete",
+        },
       ],
-    ]),
+    },
   },
   {
     id: "2",
@@ -231,90 +218,66 @@ The value will shift from model ownership to **application quality and integrati
         createdAt: new Date("2024-12-02T14:32:45"),
       },
     ],
-    thoughtSteps: new Map([
-      [
-        "msg-2-assistant",
-        [
-          {
-            id: "step-2-1",
-            phase: "understand",
-            title: "Defining Analysis Scope",
-            description: "Identifying key market segments and metrics for AI sector analysis",
-            status: "complete",
-            duration: 1.1,
-          },
-          {
-            id: "step-2-2",
-            phase: "research",
-            title: "Gathering Market Data",
-            description: "Accessing Gartner, IDC, and PitchBook databases for AI market intelligence",
-            status: "complete",
-            duration: 3.2,
-          },
-          {
-            id: "step-2-3",
-            phase: "research",
-            title: "Analyzing Investment Trends",
-            description: "Reviewing VC funding patterns and M&A activity in AI sector",
-            status: "complete",
-            duration: 2.1,
-          },
-          {
-            id: "step-2-4",
-            phase: "analyze",
-            title: "Identifying Growth Opportunities",
-            description: "Evaluating market gaps and emerging niches",
-            status: "complete",
-            duration: 1.8,
-          },
-          {
-            id: "step-2-5",
-            phase: "synthesize",
-            title: "Creating Strategic Recommendations",
-            description: "Compiling actionable insights and opportunity assessment",
-            status: "complete",
-            duration: 1.4,
-          },
-        ],
+    thoughtSteps: {
+      "msg-2-assistant": [
+        {
+          id: "step-2-1",
+          title: "Defining Analysis Scope",
+          description: "Identifying key market segments and metrics for AI sector analysis",
+          status: "complete",
+        },
+        {
+          id: "step-2-2",
+          title: "Gathering Market Data",
+          description: "Accessing Gartner, IDC, and PitchBook databases for AI market intelligence",
+          status: "complete",
+        },
+        {
+          id: "step-2-3",
+          title: "Analyzing Investment Trends",
+          description: "Reviewing VC funding patterns and M&A activity in AI sector",
+          status: "complete",
+        },
+        {
+          id: "step-2-4",
+          title: "Identifying Growth Opportunities",
+          description: "Evaluating market gaps and emerging niches",
+          status: "complete",
+        },
+        {
+          id: "step-2-5",
+          title: "Creating Strategic Recommendations",
+          description: "Compiling actionable insights and opportunity assessment",
+          status: "complete",
+        },
       ],
-      [
-        "msg-2-assistant-followup",
-        [
-          {
-            id: "step-2-6",
-            phase: "understand",
-            title: "Contextualizing Follow-up",
-            description: "Connecting open source question to broader market analysis",
-            status: "complete",
-            duration: 0.8,
-          },
-          {
-            id: "step-2-7",
-            phase: "research",
-            title: "Analyzing Open Source Model Performance",
-            description: "Comparing Llama 3.1, Mistral, and proprietary model benchmarks",
-            status: "complete",
-            duration: 1.9,
-          },
-          {
-            id: "step-2-8",
-            phase: "analyze",
-            title: "Evaluating Business Model Impact",
-            description: "Assessing disruption to existing AI service providers",
-            status: "complete",
-            duration: 1.6,
-          },
-          {
-            id: "step-2-9",
-            phase: "synthesize",
-            title: "Formulating Strategic Outlook",
-            description: "Creating bifurcated market prediction and recommendations",
-            status: "complete",
-            duration: 1.2,
-          },
-        ],
+      "msg-2-assistant-followup": [
+        {
+          id: "step-2-6",
+          title: "Contextualizing Follow-up",
+          description: "Connecting open source question to broader market analysis",
+          status: "complete",
+        },
+        {
+          id: "step-2-7",
+          title: "Analyzing Open Source Model Performance",
+          description: "Comparing Llama 3.1, Mistral, and proprietary model benchmarks",
+          status: "complete",
+        },
+        {
+          id: "step-2-8",
+          title: "Evaluating Business Model Impact",
+          description: "Assessing disruption to existing AI service providers",
+          status: "complete",
+        },
+        {
+          id: "step-2-9",
+          title: "Formulating Strategic Outlook",
+          description: "Creating bifurcated market prediction and recommendations",
+          status: "complete",
+        },
       ],
-    ]),
+    },
   },
   {
     id: "3",
@@ -403,61 +366,46 @@ Would you like me to provide detailed summaries of any specific papers or help o
         createdAt: new Date("2024-11-30T09:17:30"),
       },
     ],
-    thoughtSteps: new Map([
-      [
-        "msg-3-assistant",
-        [
-          {
-            id: "step-3-1",
-            phase: "understand",
-            title: "Parsing Research Requirements",
-            description: "Identifying scope: biomedical imaging, cancer detection, recent advances",
-            status: "complete",
-            duration: 0.9,
-          },
-          {
-            id: "step-3-2",
-            phase: "research",
-            title: "Querying Medical Databases",
-            description: "Searching PubMed, Scopus, Web of Science (2022-2024)",
-            status: "complete",
-            duration: 4.2,
-          },
-          {
-            id: "step-3-3",
-            phase: "research",
-            title: "Filtering High-Impact Publications",
-            description: "Prioritizing Nature, Science, Lancet, JAMA publications",
-            status: "complete",
-            duration: 2.6,
-          },
-          {
-            id: "step-3-4",
-            phase: "analyze",
-            title: "Thematic Clustering",
-            description: "Grouping papers by methodology and innovation type",
-            status: "complete",
-            duration: 2.8,
-          },
-          {
-            id: "step-3-5",
-            phase: "analyze",
-            title: "Identifying Research Gaps",
-            description: "Analyzing limitations and future research directions",
-            status: "complete",
-            duration: 1.7,
-          },
-          {
-            id: "step-3-6",
-            phase: "synthesize",
-            title: "Structuring Literature Review",
-            description: "Creating thematic organization with key citations",
-            status: "complete",
-            duration: 2.1,
-          },
-        ],
+    thoughtSteps: {
+      "msg-3-assistant": [
+        {
+          id: "step-3-1",
+          title: "Parsing Research Requirements",
+          description: "Identifying scope: biomedical imaging, cancer detection, recent advances",
+          status: "complete",
+        },
+        {
+          id: "step-3-2",
+          title: "Querying Medical Databases",
+          description: "Searching PubMed, Scopus, Web of Science (2022-2024)",
+          status: "complete",
+        },
+        {
+          id: "step-3-3",
+          title: "Filtering High-Impact Publications",
+          description: "Prioritizing Nature, Science, Lancet, JAMA publications",
+          status: "complete",
+        },
+        {
+          id: "step-3-4",
+          title: "Thematic Clustering",
+          description: "Grouping papers by methodology and innovation type",
+          status: "complete",
+        },
+        {
+          id: "step-3-5",
+          title: "Identifying Research Gaps",
+          description: "Analyzing limitations and future research directions",
+          status: "complete",
+        },
+        {
+          id: "step-3-6",
+          title: "Structuring Literature Review",
+          description: "Creating thematic organization with key citations",
+          status: "complete",
+        },
       ],
-    ]),
+    },
   },
   {
     id: "4",
@@ -573,45 +521,34 @@ Would you like specific guidance on any particular design or analysis technique?
         createdAt: new Date("2024-11-26T16:22:15"),
       },
     ],
-    thoughtSteps: new Map([
-      [
-        "msg-4-assistant",
-        [
-          {
-            id: "step-4-1",
-            phase: "understand",
-            title: "Clarifying Methodological Question",
-            description: "Identifying need for mixed-methods integration guidance",
-            status: "complete",
-            duration: 0.7,
-          },
-          {
-            id: "step-4-2",
-            phase: "research",
-            title: "Reviewing Mixed-Methods Literature",
-            description: "Accessing Creswell, Teddlie & Tashakkori frameworks",
-            status: "complete",
-            duration: 1.8,
-          },
-          {
-            id: "step-4-3",
-            phase: "analyze",
-            title: "Categorizing Integration Strategies",
-            description: "Organizing approaches by design type and integration point",
-            status: "complete",
-            duration: 1.4,
-          },
-          {
-            id: "step-4-4",
-            phase: "synthesize",
-            title: "Creating Practical Guide",
-            description: "Structuring actionable workflow with examples and tools",
-            status: "complete",
-            duration: 1.9,
-          },
-        ],
+    thoughtSteps: {
+      "msg-4-assistant": [
+        {
+          id: "step-4-1",
+          title: "Clarifying Methodological Question",
+          description: "Identifying need for mixed-methods integration guidance",
+          status: "complete",
+        },
+        {
+          id: "step-4-2",
+          title: "Reviewing Mixed-Methods Literature",
+          description: "Accessing Creswell, Teddlie & Tashakkori frameworks",
+          status: "complete",
+        },
+        {
+          id: "step-4-3",
+          title: "Categorizing Integration Strategies",
+          description: "Organizing approaches by design type and integration point",
+          status: "complete",
+        },
+        {
+          id: "step-4-4",
+          title: "Creating Practical Guide",
+          description: "Structuring actionable workflow with examples and tools",
+          status: "complete",
+        },
       ],
-    ]),
+    },
   },
 ];
 

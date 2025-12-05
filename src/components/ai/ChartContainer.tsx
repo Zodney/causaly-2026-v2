@@ -214,7 +214,7 @@ export function ChartContainer({
       </div>
 
       {/* Chart Content */}
-      <div ref={containerRef} className="w-full p-6">
+      <div ref={containerRef} className="w-full p-6 min-h-[480px] flex items-center justify-center">
         {parseError ? (
           // Parse error display
           <div className="rounded-lg border border-destructive bg-destructive/10 p-4">

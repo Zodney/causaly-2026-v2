@@ -165,7 +165,7 @@ export function VegaChart({
   }
 
   return (
-    <div ref={containerRef} className={`vega-container w-full ${className}`}>
+    <div ref={containerRef} className={`vega-container w-full flex items-center justify-center ${className}`}>
       {containerWidth > 0 && (
         <VegaEmbed
           spec={themedSpec as VisualizationSpec}
