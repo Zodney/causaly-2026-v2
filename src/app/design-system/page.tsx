@@ -81,11 +81,13 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { CausalyLogo } from "@/components/ui/CausalyLogo";
+import { FeatureCardButton } from "@/components/ui/feature-card-button";
 
 // App Components
 import { AppDataTable, type ColumnDef } from "@/components/app/AppDataTable";
 import { AppFileDropzone } from "@/components/app/AppFileDropzone";
 import { AppReasoningPanel } from "@/components/app/AppReasoningPanel";
+import { AppStackedBarChart } from "@/components/app/AppStackedBarChart";
 import { type ReasoningStep } from "@/components/ai/ReasoningPanel";
 
 // AI Elements
@@ -138,9 +140,19 @@ export default function DesignSystemPage() {
     },
     {
       id: "3",
-      type: "action",
+      type: "observation",
       content: "Gathering relevant information from the knowledge base.",
     },
+  ];
+
+  // Sample chart data
+  const sampleChartData = [
+    { month: "Jan", desktop: 186, mobile: 80, tablet: 45 },
+    { month: "Feb", desktop: 305, mobile: 200, tablet: 120 },
+    { month: "Mar", desktop: 237, mobile: 120, tablet: 95 },
+    { month: "Apr", desktop: 273, mobile: 190, tablet: 140 },
+    { month: "May", desktop: 209, mobile: 130, tablet: 85 },
+    { month: "Jun", desktop: 214, mobile: 140, tablet: 100 },
   ];
 
   return (
@@ -157,7 +169,7 @@ export default function DesignSystemPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-8 py-12">
+      <div className="container mx-auto px-8 py-12 overflow-y-auto max-h-[calc(100vh-180px)]">
         <div className="space-y-16">
           {/* PRIMITIVES SECTION */}
           <section className="space-y-6">
@@ -485,6 +497,35 @@ export default function DesignSystemPage() {
               </Card>
             </div>
 
+            {/* Feature Card Button - Full Width */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Feature Card Button</CardTitle>
+                <CardDescription>
+                  Custom button with icon, title, and description. Hover to see the secondary theme colors and icon change.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-wrap gap-4">
+                  <FeatureCardButton
+                    title="Flowchart"
+                    description="Visualize process of workflow"
+                    onClick={() => console.log("Flowchart clicked")}
+                  />
+                  <FeatureCardButton
+                    title="Mind Map"
+                    description="Brainstorm ideas and connections"
+                    onClick={() => console.log("Mind Map clicked")}
+                  />
+                  <FeatureCardButton
+                    title="Timeline"
+                    description="Track events chronologically"
+                    onClick={() => console.log("Timeline clicked")}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Table - Full Width */}
             <Card>
               <CardHeader>
@@ -610,6 +651,29 @@ export default function DesignSystemPage() {
                   <AppReasoningPanel
                     steps={sampleReasoningSteps}
                     title="Reasoning Trace"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* AppStackedBarChart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>AppStackedBarChart</CardTitle>
+                  <CardDescription>
+                    Stacked bar chart with theme-aware colors and automatic light/dark mode support
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <AppStackedBarChart
+                    data={sampleChartData}
+                    xAxisKey="month"
+                    bars={[
+                      { dataKey: "desktop", label: "Desktop" },
+                      { dataKey: "mobile", label: "Mobile" },
+                      { dataKey: "tablet", label: "Tablet" },
+                    ]}
+                    showLegend={true}
+                    showGrid={true}
                   />
                 </CardContent>
               </Card>

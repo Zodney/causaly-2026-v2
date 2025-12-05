@@ -28,6 +28,7 @@ import { generateMockThoughtSteps } from "@/lib/mockThoughtSteps";
 import { getChatHistoryItems, getMockChatById } from "@/lib/mock-data/sample-chats";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FeatureCardButton } from "@/components/ui/feature-card-button";
 import { cn } from "@/lib/utils";
 import {
   SquarePen,
@@ -73,6 +74,11 @@ export default function AgenticResearchPage() {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [deepResearchEnabled, setDeepResearchEnabled] = useState(false);
   const [selectedDataSources, setSelectedDataSources] = useState<string[]>([]);
+
+  // Track which messages should show the visualize button (with fade-in delay)
+  const [showVisualizeButton, setShowVisualizeButton] = useState<Set<string>>(
+    new Set()
+  );
 
   // Scroll container ref for auto-scrolling to new messages
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -165,6 +171,22 @@ export default function AgenticResearchPage() {
       }
     }
   }, [messages]);
+
+  // Show visualize button with 500ms delay after streaming completes
+  useEffect(() => {
+    if (!isLoading && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+
+      // Only show for assistant messages
+      if (lastMessage.role === "assistant") {
+        const timer = setTimeout(() => {
+          setShowVisualizeButton((prev) => new Set(prev).add(lastMessage.id));
+        }, 500);
+
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isLoading, messages]);
 
   // Load a mock chat by ID
   const loadMockChat = (chatId: string) => {
@@ -326,10 +348,33 @@ export default function AgenticResearchPage() {
 
                       return (
                         <div key={message.id}>
-                          <Message from={message.role}>
+                          <Message from={message.role} className="gap-4">
                             <MessageContent className="w-full">
                               <ChartMessageContent content={message.content} />
                             </MessageContent>
+
+                            {/* Visualize Button - Before copy button, with isolation wrapper to prevent hover bleed */}
+                            {message.role === "assistant" &&
+                              !isStreaming &&
+                              showVisualizeButton.has(message.id) && (
+                                <div
+                                  className="isolate w-full animate-in fade-in duration-500"
+                                  style={{ animationDelay: "0ms" }}
+                                >
+                                  <FeatureCardButton
+                                    title="Visualise this answer"
+                                    description="Causaly AI can visualize this answer into a graph or chart"
+                                    onClick={() => {
+                                      console.log(
+                                        "Visualize clicked for message:",
+                                        message.id
+                                      );
+                                      // TODO: Implement visualization logic
+                                    }}
+                                    className="w-full"
+                                  />
+                                </div>
+                              )}
 
                             {message.role === "assistant" && !isStreaming && (
                               <MessageActions>
