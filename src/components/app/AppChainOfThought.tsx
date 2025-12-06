@@ -174,7 +174,7 @@ export function AppChainOfThought({
                       </span>
                     }
                     description={step.description}
-                    status={step.status}
+                    status={step.status === "error" ? "complete" : step.status}
                     className={cn(
                       // Remove connecting line for last step
                       isLast && "[&>div>div:last-child]:hidden"

@@ -154,12 +154,12 @@ export function ChartContainer({
     if (type === 'mermaid') {
       return {
         icon: GitBranch,
-        title: 'Mermaid Diagram',
+        title: 'Diagram',
       };
     }
     return {
       icon: BarChart3,
-      title: 'Vega-Lite Chart',
+      title: 'Chart',
     };
   }, [type]);
 
@@ -174,7 +174,7 @@ export function ChartContainer({
         {/* Left: Chart type indicator */}
         <div className="flex items-center gap-2">
           <ChartIcon className="size-4 text-muted-foreground" strokeWidth={1.5} />
-          <span className="text-sm font-medium text-foreground">
+          <span className="text-xs font-medium text-muted-foreground">
             {chartMeta.title}
           </span>
         </div>

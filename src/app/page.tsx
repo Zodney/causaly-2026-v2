@@ -20,6 +20,7 @@ import {
 } from "@/components/ai-elements/message";
 import { MessageContent as ChartMessageContent } from "@/components/ai/MessageContent";
 import { Loader } from "@/components/ai-elements/loader";
+import { AppSpinner } from "@/components/app/AppSpinner";
 import { Suggestions, Suggestion } from "@/components/ai-elements/suggestion";
 import { AppChatInput } from "@/components/app/AppChatInput";
 import { AppChainOfThought } from "@/components/app/AppChainOfThought";
@@ -79,6 +80,15 @@ export default function AgenticResearchPage() {
   const [showVisualizeButton, setShowVisualizeButton] = useState<Set<string>>(
     new Set()
   );
+
+  // Visualization state: Map of message ID to generated chart content
+  const [messageCharts, setMessageCharts] = useState<Record<string, string>>({});
+
+  // Track which messages are currently generating visualizations
+  const [generatingCharts, setGeneratingCharts] = useState<Set<string>>(new Set());
+
+  // Track visualization errors
+  const [chartErrors, setChartErrors] = useState<Record<string, string>>({});
 
   // Scroll container ref for auto-scrolling to new messages
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -188,6 +198,25 @@ export default function AgenticResearchPage() {
     }
   }, [isLoading, messages]);
 
+  // Persist charts to localStorage
+  useEffect(() => {
+    if (Object.keys(messageCharts).length > 0) {
+      localStorage.setItem("message-charts", JSON.stringify(messageCharts));
+    }
+  }, [messageCharts]);
+
+  // Load charts from localStorage on mount
+  useEffect(() => {
+    const savedCharts = localStorage.getItem("message-charts");
+    if (savedCharts) {
+      try {
+        setMessageCharts(JSON.parse(savedCharts));
+      } catch (error) {
+        console.error("Failed to load saved charts:", error);
+      }
+    }
+  }, []);
+
   // Load a mock chat by ID
   const loadMockChat = (chatId: string) => {
     const mockChat = getMockChatById(chatId);
@@ -231,6 +260,121 @@ export default function AgenticResearchPage() {
     }
 
     handleSubmit(e);
+  };
+
+  // Handle visualization button click
+  const handleVisualize = async (messageId: string) => {
+    // 1. Find the assistant message to visualize
+    const targetMessage = messages.find((m) => m.id === messageId);
+    if (!targetMessage) return;
+
+    // 2. Hide button immediately and set loading state
+    setShowVisualizeButton((prev) => {
+      const next = new Set(prev);
+      next.delete(messageId);
+      return next;
+    });
+    setGeneratingCharts((prev) => new Set(prev).add(messageId));
+    setChartErrors((prev) => {
+      const { [messageId]: _, ...rest } = prev;
+      return rest;
+    });
+
+    // 3. Scroll to loading state after it renders
+    setTimeout(() => {
+      const loadingElement = document.getElementById(`chart-loading-${messageId}`);
+      if (loadingElement) {
+        loadingElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 100); // Small delay to ensure DOM updates
+
+    try {
+      // 4. Build conversation context + visualization prompt
+      const conversationContext = messages.slice(
+        0,
+        messages.indexOf(targetMessage) + 1
+      );
+      const visualizationPrompt = {
+        role: "user" as const,
+        content:
+          "Visualize the results above using the Vega lite syntax for quantitative information, or the Mermaid syntax for Relationships and flow diagrams",
+      };
+
+      // 5. Make background API call
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...conversationContext, visualizationPrompt],
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to generate visualization");
+
+      // 6. Stream and accumulate response
+      // The AI SDK returns a data stream format where each token is prefixed with `0:"token"`
+      // We need to parse this format to extract the actual text
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let rawResponse = "";
+
+      if (!reader) {
+        throw new Error("Response body is not readable");
+      }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        rawResponse += decoder.decode(value, { stream: true });
+      }
+
+      // Parse the AI SDK data stream format
+      // Format: 0:"token1"\n0:"token2"\n...
+      let fullResponse = "";
+      const lines = rawResponse.split("\n");
+
+      for (const line of lines) {
+        if (line.trim()) {
+          // Extract the text from format: 0:"text" or 0:'text'
+          const match = line.match(/^\d+:"(.*)"|^\d+:'(.*)'/);
+          if (match) {
+            const text = match[1] || match[2] || "";
+            // Unescape the text
+            fullResponse += text.replace(/\\n/g, "\n").replace(/\\"/g, '"');
+          }
+        }
+      }
+
+      // 7. Extract chart code fence from response
+      const chartMatch = fullResponse.match(
+        /```(?:mermaid|vega-lite|vega)\n([\s\S]*?)```/
+      );
+
+      if (!chartMatch) {
+        throw new Error("No chart could be produced based on this answer");
+      }
+
+      // 8. Save chart content
+      const chartContent = fullResponse; // Full response with code fence
+      setMessageCharts((prev) => ({ ...prev, [messageId]: chartContent }));
+    } catch (error) {
+      // 9. Handle errors - show button again so user can retry
+      setShowVisualizeButton((prev) => new Set(prev).add(messageId));
+      setChartErrors((prev) => ({
+        ...prev,
+        [messageId]:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate visualization",
+      }));
+    } finally {
+      // 10. Clear loading state
+      setGeneratingCharts((prev) => {
+        const next = new Set(prev);
+        next.delete(messageId);
+        return next;
+      });
+    }
   };
 
   return (
@@ -286,7 +430,7 @@ export default function AgenticResearchPage() {
         {/* Messages Area - Full Width with Scrollbar at Edge */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden" ref={scrollContainerRef}>
           <div className="mx-auto w-full max-w-[800px] px-5">
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 pt-12 pb-4">
                 {messages.length === 0 ? (
                   /* Empty State with Suggestions */
                   <div className="flex h-full min-h-[400px] flex-col items-center justify-center gap-6 p-8">
@@ -347,34 +491,14 @@ export default function AgenticResearchPage() {
                           : messageThoughts[message.id];
 
                       return (
-                        <div key={message.id}>
-                          <Message from={message.role} className="gap-4">
+                        <div
+                          key={message.id}
+                          className={`flex flex-col gap-6 ${message.role === "assistant" ? "mb-16" : ""}`}
+                        >
+                          <Message from={message.role}>
                             <MessageContent className="w-full">
                               <ChartMessageContent content={message.content} />
                             </MessageContent>
-
-                            {/* Visualize Button - Before copy button, with isolation wrapper to prevent hover bleed */}
-                            {message.role === "assistant" &&
-                              !isStreaming &&
-                              showVisualizeButton.has(message.id) && (
-                                <div
-                                  className="isolate w-full animate-in fade-in duration-500"
-                                  style={{ animationDelay: "0ms" }}
-                                >
-                                  <FeatureCardButton
-                                    title="Visualise this answer"
-                                    description="Causaly AI can visualize this answer into a graph or chart"
-                                    onClick={() => {
-                                      console.log(
-                                        "Visualize clicked for message:",
-                                        message.id
-                                      );
-                                      // TODO: Implement visualization logic
-                                    }}
-                                    className="w-full"
-                                  />
-                                </div>
-                              )}
 
                             {message.role === "assistant" && !isStreaming && (
                               <MessageActions>
@@ -393,11 +517,67 @@ export default function AgenticResearchPage() {
                             )}
                           </Message>
 
+                          {/* Visualize Button - OUTSIDE Message component to prevent ANY hover bleed */}
+                          {message.role === "assistant" &&
+                            !isStreaming &&
+                            showVisualizeButton.has(message.id) && (
+                              <div className="w-full animate-in fade-in duration-500">
+                                <FeatureCardButton
+                                  title="Visualise this answer"
+                                  description="Causaly AI can visualize this answer into a graph or chart"
+                                  onClick={() => handleVisualize(message.id)}
+                                  className="w-full"
+                                />
+                              </div>
+                            )}
+
+                          {/* Loading state while generating chart */}
+                          {message.role === "assistant" &&
+                            generatingCharts.has(message.id) && (
+                              <div
+                                className="w-full animate-in fade-in duration-200"
+                                id={`chart-loading-${message.id}`}
+                              >
+                                <div className="flex items-center justify-center h-[530px] rounded-lg border border-dashed border-border bg-muted/30">
+                                  <div className="flex flex-col items-center gap-2">
+                                    <AppSpinner variant="ring" size={32} />
+                                    <p className="text-sm text-muted-foreground">
+                                      Generating visualization...
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                          {/* Render chart if available */}
+                          {message.role === "assistant" &&
+                            messageCharts[message.id] && (
+                              <div className="w-full animate-in fade-in duration-500">
+                                <MessageContent className="w-full">
+                                  <ChartMessageContent
+                                    content={messageCharts[message.id]}
+                                  />
+                                </MessageContent>
+                              </div>
+                            )}
+
+                          {/* Show error if visualization failed */}
+                          {message.role === "assistant" &&
+                            chartErrors[message.id] && (
+                              <div className="w-full animate-in fade-in duration-300">
+                                <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3">
+                                  <p className="text-sm text-destructive">
+                                    {chartErrors[message.id]}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
                           {/* Chain-of-Thought - Show after user message, before assistant response */}
                           {message.role === "user" &&
                             thoughtSteps &&
                             thoughtSteps.length > 0 && (
-                              <div className="mt-4">
+                              <div className="-mt-3">
                                 <AppChainOfThought
                                   steps={thoughtSteps}
                                   defaultCollapsed={

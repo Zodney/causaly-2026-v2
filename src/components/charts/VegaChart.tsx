@@ -61,6 +61,7 @@ export function VegaChart({
   onViewReady,
 }: VegaChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const vegaRef = useRef<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
@@ -164,10 +165,34 @@ export function VegaChart({
     );
   }
 
+  // Notify parent when view is ready via ref
+  useEffect(() => {
+    if (vegaRef.current && onViewReady) {
+      // Access the Vega view from the ref after render
+      const timer = setTimeout(() => {
+        try {
+          // VegaEmbed ref has a finalize method that returns a promise with the view
+          if (vegaRef.current?.finalize) {
+            vegaRef.current.finalize().then((result: any) => {
+              if (result?.view) {
+                onViewReady(result.view);
+              }
+            });
+          }
+        } catch (err) {
+          console.warn('Could not access Vega view:', err);
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [containerWidth, onViewReady]);
+
   return (
     <div ref={containerRef} className={`vega-container w-full flex items-center justify-center ${className}`}>
       {containerWidth > 0 && (
         <VegaEmbed
+          ref={vegaRef}
           spec={themedSpec as VisualizationSpec}
           options={{
             actions: showActions ? undefined : false,
@@ -177,8 +202,6 @@ export function VegaChart({
             console.error('Vega rendering error:', err);
             setError((err as Error)?.message || 'Failed to render chart');
           }}
-          // @ts-ignore - onNewView exists but types are incorrect in @types/react-vega
-          onNewView={onViewReady}
         />
       )}
     </div>

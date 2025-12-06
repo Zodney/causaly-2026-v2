@@ -37,7 +37,6 @@ import {
   TableHeader,
   TableHeaderGroup,
   TableHead,
-  TableColumnHeader,
   TableBody,
   TableRow,
   TableCell,
@@ -83,26 +82,7 @@ export function AppDataTable<TData, TValue = unknown>({
         <TableHeader>
           {({ headerGroup }) => (
             <TableHeaderGroup headerGroup={headerGroup}>
-              {({ header }) => (
-                <TableHead header={header}>
-                  {header.column.getCanSort() ? (
-                    <TableColumnHeader
-                      column={header.column}
-                      title={
-                        typeof header.column.columnDef.header === "string"
-                          ? header.column.columnDef.header
-                          : header.column.id
-                      }
-                    />
-                  ) : (
-                    <div>
-                      {typeof header.column.columnDef.header === "string"
-                        ? header.column.columnDef.header
-                        : header.column.id}
-                    </div>
-                  )}
-                </TableHead>
-              )}
+              {({ header }) => <TableHead header={header} />}
             </TableHeaderGroup>
           )}
         </TableHeader>
